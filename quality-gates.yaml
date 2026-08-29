@@ -1,0 +1,134 @@
+# Northline quality gates.
+#
+# These thresholds are the standard a release is held to. They live here rather
+# than in code so that anyone can see, and change, what the bar actually is.
+# The certification engine in Phase 7 reads this file and produces the release
+# decision from real results.
+#
+# on_failure decides how bad a breach is:
+#   NO-GO           the release cannot ship
+#   CONDITIONAL-GO  the release may ship with a recorded, accepted risk
+
+release: R1.0
+environment: local
+
+gates:
+  - id: GATE-ENV
+    name: Environment readiness
+    rule: The readiness check must pass before any suite runs
+    threshold: must_pass
+    on_failure: NO-GO
+    rationale: >
+      Results from an environment that is not ready are meaningless. This gate
+      exists because in Phase 1 the container reported healthy for nine minutes
+      while every page in the application was failing.
+
+  - id: GATE-SMOKE
+    name: Smoke suite
+    rule: Every smoke test must pass
+    threshold: 0
+    unit: failed tests allowed
+    on_failure: NO-GO
+    rationale: >
+      Smoke covers the paths without which nothing else can be tested. A single
+      smoke failure means the build is not testable, so nothing downstream is
+      trustworthy.
+
+  - id: GATE-CRITICAL-DEFECT
+    name: Critical and high defects
+    rule: No open defect of severity Critical or High
+    threshold: 0
+    unit: open defects allowed
+    on_failure: NO-GO
+    rationale: >
+      In a banking context, Critical means money or customer data is at risk.
+      No threshold above zero is defensible.
+
+  - id: GATE-RECON
+    name: Settlement reconciliation
+    rule: Reconciliation must report zero unexplained breaks
+    threshold: 0
+    unit: breaks allowed
+    on_failure: NO-GO
+    rationale: >
+      An unexplained break means the money does not add up between two systems.
+      Banks do not ship past that.
+
+  - id: GATE-API-PASS
+    name: API suite pass rate
+    rule: API test pass rate must meet the threshold
+    threshold: 100
+    unit: percent
+    on_failure: NO-GO
+    rationale: >
+      API tests are deterministic. They do not depend on browser timing or
+      rendering, so a failure is a real defect rather than flakiness. Anything
+      below 100 percent means something is genuinely broken.
+
+  - id: GATE-UI-PASS
+    name: UI regression pass rate
+    rule: UI test pass rate must meet the threshold
+    threshold: 95
+    unit: percent
+    on_failure: CONDITIONAL-GO
+    rationale: >
+      Browser tests carry genuine flakiness from timing and rendering. The
+      threshold is below 100 because pretending otherwise leads to teams
+      ignoring red builds, which is worse than an honest tolerance. Every
+      failure below the line is still triaged, not ignored.
+
+  - id: GATE-ACCESSIBILITY
+    name: Accessibility violations
+    rule: No critical or serious axe-core violations on key pages
+    threshold: 0
+    unit: critical or serious violations allowed
+    on_failure: CONDITIONAL-GO
+    rationale: >
+      In Ontario this is a legal obligation under the Accessibility for
+      Ontarians with Disabilities Act, not a preference. It is CONDITIONAL-GO
+      rather than NO-GO only because a remediation commitment with a date is an
+      accepted way to manage it, which is not true of a critical money defect.
+
+  - id: GATE-PERF-P95
+    name: Performance 95th percentile
+    rule: 95th percentile response time must stay under the limit
+    threshold: 2000
+    unit: milliseconds
+    on_failure: CONDITIONAL-GO
+    rationale: >
+      The 95th percentile is used rather than the average because an average
+      hides the slow tail. If 5 percent of customers wait 30 seconds, the
+      average still looks fine and those customers still leave.
+
+  - id: GATE-PERF-ERROR
+    name: Performance error rate
+    rule: Failed request rate under load must stay under the limit
+    threshold: 1
+    unit: percent
+    on_failure: CONDITIONAL-GO
+    rationale: >
+      Correct but failing under load is still failing. One percent is a
+      starting point for this environment, not an industry constant.
+
+  - id: GATE-COVERAGE
+    name: Requirement coverage
+    rule: Proportion of requirements with at least one executed test
+    threshold: 90
+    unit: percent
+    on_failure: CONDITIONAL-GO
+    rationale: >
+      Measured from the traceability matrix. Coverage here means every
+      requirement has a test that ran, which is a weaker claim than the
+      requirement being fully verified. Stated plainly to avoid overclaiming.
+
+decision_rules:
+  GO: Every gate passed
+  CONDITIONAL-GO: No NO-GO gate failed, and at least one CONDITIONAL-GO gate failed
+  NO-GO: At least one gate whose on_failure is NO-GO failed
+
+notes: >
+  Thresholds are set for a single-laptop environment and a demonstration
+  application. In a real bank they would come from service level agreements and
+  regulatory obligations, not from a QA engineer's judgement. They are written
+  here as configuration precisely so that changing them is a visible decision
+  rather than an edit buried in code.
