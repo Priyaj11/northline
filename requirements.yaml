@@ -204,6 +204,19 @@ requirements:
     source: derived
     verification: [ui, api, database]
 
+  - id: REQ-XFER-007
+    area: XFER
+    title: A transfer exceeding the available balance is handled consistently
+    detail: >
+      The application's rule for a transfer larger than the source balance is
+      unconfirmed. The seeded data contains accounts with negative balances,
+      which suggests overdrafts may be permitted. Whatever the rule is, the
+      amount debited must equal the amount credited. Added during Phase 2C
+      because test design revealed the register had no requirement covering it.
+    priority: High
+    source: assumed
+    verification: [ui, api, database]
+
   # --- Bill payment ----------------------------------------------------------
   - id: REQ-BILL-001
     area: BILL

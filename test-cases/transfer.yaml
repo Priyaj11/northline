@@ -1,0 +1,270 @@
+suite: Funds transfer
+description: >
+  Moving money between accounts. This is the highest risk area in the
+  application, so it carries the densest test design.
+
+test_cases:
+
+  - id: TC-XFER-001
+    requirement: REQ-XFER-001
+    title: Transfer a typical valid amount between two of the customer's accounts
+    technique: Equivalence Partitioning
+    layer: ui
+    preconditions: The customer owns at least two accounts and the source holds at least 100.00.
+    test_data: "amount: 100.00, source and destination read at runtime"
+    steps:
+      - Log in and open the transfer page.
+      - Enter the amount and choose a source and a destination account.
+      - Submit the transfer.
+    expected: A confirmation is displayed naming the amount and both accounts.
+    priority: Critical
+    automation: planned
+    phase: 3
+
+  - id: TC-XFER-002
+    requirement: REQ-XFER-001
+    title: Transfer through the service interface
+    technique: Equivalence Partitioning
+    layer: api
+    preconditions: Two accounts belonging to the same customer are known.
+    test_data: "POST /services/bank/transfer with amount 100.00"
+    steps:
+      - Send a transfer request with a valid amount and two valid accounts.
+    expected: HTTP 200 and a response confirming the transfer.
+    priority: Critical
+    automation: planned
+    phase: 3
+
+  - id: TC-XFER-003
+    requirement: REQ-XFER-002
+    title: The source is debited and the destination credited by the same amount
+    technique: Equivalence Partitioning
+    layer: database
+    preconditions: Two accounts are known and their balances have been recorded.
+    test_data: "amount: 100.00"
+    steps:
+      - Record both balances before the transfer.
+      - Perform the transfer.
+      - Record both balances after the transfer.
+      - Compare the differences against the amount.
+    expected: >
+      The source balance falls by exactly the amount and the destination rises
+      by exactly the amount. No money is created or lost. Asserted on the
+      difference rather than the absolute balance, so the test survives any
+      starting state.
+    priority: Critical
+    automation: planned
+    phase: 4
+
+  - id: TC-XFER-004
+    requirement: REQ-XFER-003
+    title: Reject a transfer of zero
+    technique: Boundary Value Analysis
+    layer: api
+    preconditions: Two valid accounts are known.
+    test_data: "amount: 0.00 (the boundary itself)"
+    steps:
+      - Attempt a transfer with an amount of zero.
+    expected: The transfer is refused and no balance changes.
+    priority: High
+    automation: planned
+    phase: 3
+
+  - id: TC-XFER-005
+    requirement: REQ-XFER-003
+    title: Reject a transfer just below zero
+    technique: Boundary Value Analysis
+    layer: api
+    preconditions: Two valid accounts are known.
+    test_data: "amount: -0.01 (one step below the boundary)"
+    steps:
+      - Attempt a transfer with an amount of minus one cent.
+    expected: The transfer is refused and no balance changes.
+    priority: High
+    automation: planned
+    phase: 3
+
+  - id: TC-XFER-006
+    requirement: REQ-XFER-003
+    title: Accept the smallest valid amount
+    technique: Boundary Value Analysis
+    layer: api
+    preconditions: Two valid accounts are known.
+    test_data: "amount: 0.01 (one step above the boundary)"
+    steps:
+      - Perform a transfer of one cent.
+      - Read both balances afterwards.
+    expected: >
+      The transfer succeeds and moves exactly one cent. This is the case that
+      catches a wrong comparison operator, where the code tests for greater
+      than or equal to zero instead of greater than zero.
+    priority: High
+    automation: planned
+    phase: 3
+
+  - id: TC-XFER-007
+    requirement: REQ-XFER-003
+    title: Reject a clearly negative amount
+    technique: Equivalence Partitioning
+    layer: api
+    preconditions: Two valid accounts are known.
+    test_data: "amount: -500.00 (a representative of the negative partition)"
+    steps:
+      - Attempt a transfer with a clearly negative amount.
+    expected: >
+      The transfer is refused. If it succeeds it would move money in the
+      opposite direction, which is a Critical severity defect.
+    priority: Critical
+    automation: planned
+    phase: 3
+
+  - id: TC-XFER-008
+    requirement: REQ-XFER-004
+    title: Reject a non-numeric amount
+    technique: Negative Testing
+    layer: ui
+    preconditions: The transfer page is displayed.
+    test_data: "amount: abc"
+    steps:
+      - Enter letters in the amount field and submit.
+    expected: The submission is refused with a validation message.
+    priority: High
+    automation: planned
+    phase: 3
+
+  - id: TC-XFER-009
+    requirement: REQ-XFER-004
+    title: Reject an empty amount
+    technique: Boundary Value Analysis
+    layer: ui
+    preconditions: The transfer page is displayed.
+    test_data: "amount: (empty)"
+    steps:
+      - Leave the amount field empty and submit.
+    expected: The submission is refused with a validation message.
+    priority: High
+    automation: planned
+    phase: 3
+
+  - id: TC-XFER-010
+    requirement: REQ-XFER-004
+    title: Handle an amount with more than two decimal places
+    technique: Boundary Value Analysis
+    layer: api
+    preconditions: Two valid accounts are known.
+    test_data: "amount: 10.005"
+    steps:
+      - Attempt a transfer with three decimal places.
+      - Read both balances afterwards.
+    expected: >
+      The amount is either refused or rounded consistently, and the amount
+      debited equals the amount credited. Silent inconsistent rounding is how
+      money leaks in real systems.
+    priority: High
+    automation: planned
+    phase: 4
+
+  - id: TC-XFER-011
+    requirement: REQ-XFER-004
+    title: Reject an amount containing a currency symbol or separators
+    technique: Negative Testing
+    layer: ui
+    preconditions: The transfer page is displayed.
+    test_data: "amount values: $100, 1,000.00, 1e3"
+    steps:
+      - Enter each malformed amount in turn and submit.
+    expected: Each submission is refused with a validation message.
+    priority: Medium
+    automation: planned
+    phase: 3
+
+  - id: TC-XFER-012
+    requirement: REQ-XFER-005
+    title: Reject a transfer to an account that does not exist
+    technique: Negative Testing
+    layer: api
+    preconditions: A valid source account is known.
+    test_data: "destination: 99999999 (an identifier that does not exist)"
+    steps:
+      - Attempt a transfer to a non-existent destination.
+      - Read the source balance afterwards.
+    expected: >
+      The transfer is refused and the source balance is unchanged. A debit with
+      no matching credit is money disappearing, which is Critical.
+    priority: Critical
+    automation: planned
+    phase: 4
+
+  - id: TC-XFER-013
+    requirement: REQ-XFER-005
+    title: Handle a transfer where source and destination are the same account
+    technique: Decision Table Testing
+    layer: api
+    preconditions: One valid account is known.
+    test_data: "source and destination set to the same account"
+    steps:
+      - Attempt a transfer where both accounts are identical.
+      - Read the balance afterwards.
+    expected: >
+      Either the transfer is refused, or it completes with a net balance change
+      of exactly zero. Any other outcome means money was created or destroyed.
+    priority: High
+    automation: planned
+    phase: 4
+
+  - id: TC-XFER-014
+    requirement: REQ-XFER-006
+    title: A completed transfer appears in both accounts' transaction history
+    technique: Equivalence Partitioning
+    layer: api
+    preconditions: A transfer has been completed between two known accounts.
+    test_data: "the amount and both account identifiers from the transfer"
+    steps:
+      - Perform a transfer.
+      - Retrieve the transaction history for the source account.
+      - Retrieve the transaction history for the destination account.
+    expected: >
+      A debit appears on the source and a credit on the destination, each for
+      the transferred amount.
+    priority: Critical
+    automation: planned
+    phase: 4
+
+  - id: TC-XFER-015
+    requirement: REQ-XFER-007
+    title: Establish how a transfer exceeding the available balance is handled
+    technique: Boundary Value Analysis
+    layer: api
+    preconditions: The source account balance is known.
+    test_data: "amounts at balance minus 0.01, exactly balance, and balance plus 0.01"
+    steps:
+      - Read the source balance.
+      - Attempt a transfer of the balance minus one cent.
+      - Attempt a transfer of exactly the balance.
+      - Attempt a transfer of the balance plus one cent.
+      - Read the balances after each attempt.
+    expected: >
+      The first two succeed. The behaviour of the third is unconfirmed, which is
+      why REQ-XFER-007 is marked assumed. Whatever it does, the debit must equal
+      the credit. This case exists to establish the actual rule, and the
+      requirement register will be corrected to match rather than a defect being
+      invented.
+    priority: High
+    automation: planned
+    phase: 4
+
+  - id: TC-XFER-016
+    requirement: REQ-XFER-001
+    title: Transfer across browsers and account types, reduced by pairwise selection
+    technique: Pairwise Testing
+    layer: ui
+    preconditions: Accounts of both types exist and all three browsers are available.
+    test_data: >
+      Nine combinations covering every pair of browser, account type and amount
+      class, reduced from eighteen. Listed in docs/test-design-techniques.md.
+    steps:
+      - Run a valid transfer for each of the nine selected combinations.
+    expected: Every combination completes successfully with correct balances.
+    priority: Medium
+    automation: planned
+    phase: 3

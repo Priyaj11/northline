@@ -1,0 +1,147 @@
+suite: Security-adjacent
+description: >
+  Verifying that the application enforces the access rules it claims to enforce.
+  This is not penetration testing. Nothing is exploited, and no attempt is made
+  to extract data beyond demonstrating whether a control exists.
+
+test_cases:
+
+  - id: TC-SEC-001
+    requirement: REQ-SEC-001
+    title: Account data requires authentication
+    technique: Negative Testing
+    layer: security
+    preconditions: A customer identifier is known. No session is established.
+    test_data: "GET /services/bank/customers/{customerId}/accounts with no credentials"
+    steps:
+      - Request the customer's accounts with no credentials, cookie or token.
+      - Record the status and whether financial data is returned.
+    expected: >
+      Access is refused. Phase 1 observed full account data being returned with
+      no credentials, so this case is expected to fail. If it does, it is
+      recorded as a defect with evidence in Phase 6, and no exploitation beyond
+      this single request is performed.
+    priority: Critical
+    automation: planned
+    phase: 5
+
+  - id: TC-SEC-002
+    requirement: REQ-SEC-001
+    title: Transaction data requires authentication
+    technique: Negative Testing
+    layer: security
+    preconditions: An account identifier is known. No session is established.
+    test_data: "GET /services/bank/accounts/{accountId}/transactions with no credentials"
+    steps:
+      - Request the account's transactions with no credentials.
+      - Record the status and whether transaction data is returned.
+    expected: Access is refused.
+    priority: Critical
+    automation: planned
+    phase: 5
+
+  - id: TC-SEC-003
+    requirement: REQ-SEC-002
+    title: A customer cannot read another customer's account
+    technique: Negative Testing
+    layer: security
+    preconditions: Two customers exist, each owning at least one account.
+    test_data: "customer A's session requesting customer B's account identifier"
+    steps:
+      - Register a second customer and note one of their account identifiers.
+      - Log in as the first customer.
+      - Request the second customer's account within the first customer's session.
+    expected: >
+      Access is refused. This is Broken Object Level Authorisation, where an
+      application checks that you are logged in but not that the record belongs
+      to you.
+    priority: Critical
+    automation: planned
+    phase: 5
+
+  - id: TC-SEC-004
+    requirement: REQ-SEC-002
+    title: A customer cannot transfer from another customer's account
+    technique: Negative Testing
+    layer: security
+    preconditions: Two customers exist with accounts.
+    test_data: "customer A's session, source account belonging to customer B"
+    steps:
+      - Log in as the first customer.
+      - Attempt a transfer whose source is the second customer's account.
+      - Read the second customer's balance afterwards.
+    expected: >
+      The transfer is refused and the balance is unchanged. This is the highest
+      severity failure the application could have.
+    priority: Critical
+    automation: planned
+    phase: 5
+
+  - id: TC-SEC-005
+    requirement: REQ-SEC-003
+    title: Credentials are not transmitted in the URL path
+    technique: Negative Testing
+    layer: security
+    preconditions: The service interface is reachable.
+    test_data: "the login endpoint signature discovered in Phase 1"
+    steps:
+      - Inspect the login endpoint's declared shape in the service description.
+      - Determine whether the password appears as a path segment.
+    expected: >
+      Credentials are carried in a request body or header, not the path. Phase 1
+      observed a login endpoint taking both as path segments, so this case is
+      expected to fail. URLs appear in access logs, browser history and proxy
+      logs, none of which are treated as secret stores.
+    priority: High
+    automation: planned
+    phase: 5
+
+  - id: TC-SEC-006
+    requirement: REQ-SEC-004
+    title: An authenticated page is not reachable without a session
+    technique: State Transition Testing
+    layer: security
+    preconditions: No session is established.
+    test_data: "the account overview page address"
+    steps:
+      - Request the account overview page directly with no session.
+    expected: Customer data is not returned. The request is refused or redirected to login.
+    priority: Critical
+    automation: planned
+    phase: 5
+
+  - id: TC-SEC-007
+    requirement: REQ-SEC-004
+    title: Behaviour of a session after the browser session ends
+    technique: State Transition Testing
+    layer: security
+    preconditions: A customer has logged in.
+    test_data: "the session cookie issued at login"
+    steps:
+      - Log in and record the session cookie attributes.
+      - Discard the cookie and request an authenticated page.
+    expected: >
+      Access is refused without the cookie. The cookie's attributes are recorded
+      as evidence, since ParaBank has no server-side session timeout endpoint
+      and timeout cannot be tested through the service interface.
+    priority: High
+    automation: planned
+    phase: 5
+
+  - id: TC-SEC-008
+    requirement: REQ-SEC-004
+    title: Input validation on the transfer amount is enforced server side
+    technique: Negative Testing
+    layer: security
+    preconditions: Two valid accounts are known.
+    test_data: "a negative amount sent directly to the service, bypassing the browser form"
+    steps:
+      - Send a transfer request with a negative amount directly to the service.
+      - Read both balances afterwards.
+    expected: >
+      The request is refused. Client-side validation is a convenience for users,
+      not a control. Any rule enforced only in the browser is not enforced at
+      all, because the service can be called directly.
+    priority: Critical
+    automation: planned
+    phase: 5

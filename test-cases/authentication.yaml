@@ -1,0 +1,194 @@
+suite: Authentication
+description: Login, logout, registration and session establishment.
+
+test_cases:
+
+  - id: TC-AUTH-001
+    requirement: REQ-AUTH-001
+    title: Log in with valid credentials
+    technique: Equivalence Partitioning
+    layer: ui
+    preconditions: The application is provisioned and the demo customer exists.
+    test_data: "username: john, password: demo"
+    steps:
+      - Open the login page.
+      - Enter the valid username and password.
+      - Submit the form.
+    expected: The account overview page is shown and the customer name appears.
+    priority: Critical
+    automation: planned
+    phase: 3
+
+  - id: TC-AUTH-002
+    requirement: REQ-AUTH-001
+    title: Log in through the service interface with valid credentials
+    technique: Equivalence Partitioning
+    layer: api
+    preconditions: The application is provisioned.
+    test_data: "GET /services/bank/login/john/demo"
+    steps:
+      - Send the login request with valid credentials.
+    expected: HTTP 200 and a customer record identifying the demo customer.
+    priority: Critical
+    automation: planned
+    phase: 3
+
+  - id: TC-AUTH-003
+    requirement: REQ-AUTH-002
+    title: Reject a valid username with a wrong password
+    technique: Equivalence Partitioning
+    layer: ui
+    preconditions: The demo customer exists.
+    test_data: "username: john, password: wrongpassword"
+    steps:
+      - Open the login page.
+      - Enter the valid username and an incorrect password.
+      - Submit the form.
+    expected: Access is refused and an error is displayed. The account overview is not shown.
+    priority: Critical
+    automation: planned
+    phase: 3
+
+  - id: TC-AUTH-004
+    requirement: REQ-AUTH-002
+    title: Reject an unknown username
+    technique: Equivalence Partitioning
+    layer: ui
+    preconditions: The username does not exist.
+    test_data: "username: nosuchuser, password: demo"
+    steps:
+      - Open the login page.
+      - Enter an unknown username with any password.
+      - Submit the form.
+    expected: Access is refused and an error is displayed.
+    priority: Critical
+    automation: planned
+    phase: 3
+
+  - id: TC-AUTH-005
+    requirement: REQ-AUTH-002
+    title: The error message does not reveal which credential was wrong
+    technique: Negative Testing
+    layer: security
+    preconditions: One valid username and one unknown username are available.
+    test_data: "wrong password on a valid user, and an unknown user"
+    steps:
+      - Attempt login with a valid username and a wrong password. Record the message.
+      - Attempt login with an unknown username. Record the message.
+      - Compare the two messages.
+    expected: >
+      Both attempts produce the same message. A different message would let an
+      attacker confirm which usernames exist, which is username enumeration.
+    priority: High
+    automation: planned
+    phase: 5
+
+  - id: TC-AUTH-006
+    requirement: REQ-AUTH-003
+    title: Reject an empty username
+    technique: Boundary Value Analysis
+    layer: ui
+    preconditions: The login page is displayed.
+    test_data: "username: (empty), password: demo"
+    steps:
+      - Leave the username field empty and enter a password.
+      - Submit the form.
+    expected: Submission is refused with a validation message. No session is created.
+    priority: High
+    automation: planned
+    phase: 3
+
+  - id: TC-AUTH-007
+    requirement: REQ-AUTH-003
+    title: Reject an empty password
+    technique: Boundary Value Analysis
+    layer: ui
+    preconditions: The login page is displayed.
+    test_data: "username: john, password: (empty)"
+    steps:
+      - Enter a username and leave the password field empty.
+      - Submit the form.
+    expected: Submission is refused with a validation message. No session is created.
+    priority: High
+    automation: planned
+    phase: 3
+
+  - id: TC-AUTH-008
+    requirement: REQ-AUTH-003
+    title: Reject both fields empty
+    technique: Boundary Value Analysis
+    layer: ui
+    preconditions: The login page is displayed.
+    test_data: "username: (empty), password: (empty)"
+    steps:
+      - Submit the login form with both fields empty.
+    expected: Submission is refused with a validation message.
+    priority: Medium
+    automation: planned
+    phase: 3
+
+  - id: TC-AUTH-009
+    requirement: REQ-AUTH-004
+    title: Log out ends the session
+    technique: State Transition Testing
+    layer: ui
+    preconditions: A customer is logged in.
+    test_data: "the demo customer session"
+    steps:
+      - Log in as the demo customer.
+      - Select log out.
+    expected: The login page is shown and the customer is no longer authenticated.
+    priority: High
+    automation: planned
+    phase: 3
+
+  - id: TC-AUTH-010
+    requirement: REQ-AUTH-004
+    title: An account page is not reachable after logging out
+    technique: State Transition Testing
+    layer: security
+    preconditions: A customer has logged in and then logged out.
+    test_data: "the account overview URL"
+    steps:
+      - Log in, note the account overview address, then log out.
+      - Request the account overview address directly.
+    expected: >
+      Customer account data is not returned. The application either refuses the
+      request or redirects to the login page.
+    priority: Critical
+    automation: planned
+    phase: 5
+
+  - id: TC-AUTH-011
+    requirement: REQ-AUTH-005
+    title: Register a new customer
+    technique: Equivalence Partitioning
+    layer: ui
+    preconditions: The registration form is reachable and the username is unused.
+    test_data: "a generated unique username with valid values in every required field"
+    steps:
+      - Open the registration form.
+      - Complete every required field with valid data.
+      - Submit the form.
+    expected: >
+      The customer is created, is logged in, and has at least one account.
+      This underpins the isolated test data approach in docs/test-data-strategy.md.
+    priority: High
+    automation: planned
+    phase: 3
+
+  - id: TC-AUTH-012
+    requirement: REQ-AUTH-005
+    title: Reject registration with a duplicate username
+    technique: Negative Testing
+    layer: ui
+    preconditions: A customer with the chosen username already exists.
+    test_data: "username: john"
+    steps:
+      - Open the registration form.
+      - Complete it using a username that already exists.
+      - Submit the form.
+    expected: Registration is refused with a message that the username is taken.
+    priority: Medium
+    automation: planned
+    phase: 3

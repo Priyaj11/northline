@@ -6,7 +6,7 @@ Do not edit by hand. Edit the YAML register and regenerate.
 Release: R1.0  
 System Under Test: ParaBank
 
-Total requirements: 40
+Total requirements: 41
 
 ## Where these requirements come from
 
@@ -20,14 +20,14 @@ assumptions being reported as defects.
 | --- | --- | --- |
 | observed | verified directly against the running application in Phase 1 | 12 |
 | derived | standard banking behaviour any reasonable specification includes | 22 |
-| assumed | expected but unconfirmed; the test will settle it | 6 |
+| assumed | expected but unconfirmed; the test will settle it | 7 |
 
 ## Priority distribution
 
 | Priority | Count |
 | --- | --- |
 | Critical | 17 |
-| High | 17 |
+| High | 18 |
 | Medium | 6 |
 | Low | 0 |
 
@@ -100,6 +100,7 @@ assumptions being reported as defects.
 | REQ-XFER-004 | A transfer with a non-numeric or malformed amount is rejected | High | assumed | ui, api |
 | REQ-XFER-005 | A transfer to a non-existent destination account is rejected | High | assumed | ui, api, database |
 | REQ-XFER-006 | A completed transfer produces a transaction record on both accounts | Critical | derived | ui, api, database |
+| REQ-XFER-007 | A transfer exceeding the available balance is handled consistently | High | assumed | ui, api, database |
 
 **REQ-XFER-001** A valid transfer moves the stated amount from one account to another.
 
@@ -112,6 +113,8 @@ assumptions being reported as defects.
 **REQ-XFER-005** An unknown destination account identifier does not result in a completed transfer.
 
 **REQ-XFER-006** Each side of the transfer appears in that account's transaction history.
+
+**REQ-XFER-007** The application's rule for a transfer larger than the source balance is unconfirmed. The seeded data contains accounts with negative balances, which suggests overdrafts may be permitted. Whatever the rule is, the amount debited must equal the amount credited. Added during Phase 2C because test design revealed the register had no requirement covering it.
 
 ### BILL - Bill payment
 
