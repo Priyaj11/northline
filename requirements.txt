@@ -1,6 +1,7 @@
-# Phase 1 dependencies only. Each later phase adds what it actually needs,
+# Phase 1 and 2 dependencies. Each later phase adds what it actually needs,
 # so the reason every package is here stays obvious.
 pytest==8.3.4
 requests==2.32.3
 python-dotenv==1.0.1
 psycopg[binary]==3.2.3
+PyYAML==6.0.2

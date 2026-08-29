@@ -1,0 +1,384 @@
+# Northline requirements register.
+#
+# This file is the single source of truth for what the release must do.
+# docs/requirements.md and the traceability matrix are generated from it.
+#
+# source:
+#   observed  - behaviour verified directly against the running application
+#   derived   - standard banking behaviour any reasonable specification includes
+#   assumed   - expected but unconfirmed; the test will settle it
+#
+# An assumed requirement that fails is not automatically a defect. It may be a
+# wrong assumption. Recording the distinction up front prevents fake defects.
+
+release: R1.0
+system_under_test: ParaBank
+
+areas:
+  ENV: Environment readiness
+  AUTH: Authentication and session
+  ACCT: Accounts
+  XFER: Funds transfer
+  BILL: Bill payment
+  TXN: Transaction history
+  DATA: Data integrity and reconciliation
+  SEC: Security-adjacent behaviour
+  ACC: Accessibility
+  PERF: Performance
+
+requirements:
+
+  # --- Environment readiness -------------------------------------------------
+  - id: REQ-ENV-001
+    area: ENV
+    title: The application home page must be reachable
+    detail: A GET of the home page returns HTTP 200.
+    priority: Critical
+    source: observed
+    verification: [environment]
+
+  - id: REQ-ENV-002
+    area: ENV
+    title: The application must be provisioned before testing
+    detail: >
+      The home page returns 200 with redirects disabled. A 302 to the database
+      initialisation page means the schema and demo data are missing.
+    priority: Critical
+    source: observed
+    verification: [environment]
+
+  - id: REQ-ENV-003
+    area: ENV
+    title: The served application must be ParaBank
+    detail: The home page content identifies the application, not a default server page.
+    priority: High
+    source: observed
+    verification: [environment]
+
+  - id: REQ-ENV-004
+    area: ENV
+    title: The application database schema must exist
+    detail: >
+      The admin page returns 200. That page queries the Parameter table, so a
+      200 is positive evidence that the schema was created.
+    priority: Critical
+    source: observed
+    verification: [environment]
+
+  - id: REQ-ENV-005
+    area: ENV
+    title: The certification data store must accept connections
+    detail: PostgreSQL accepts a connection and answers a trivial query.
+    priority: Critical
+    source: observed
+    verification: [environment]
+
+  # --- Authentication --------------------------------------------------------
+  - id: REQ-AUTH-001
+    area: AUTH
+    title: A registered customer can log in with valid credentials
+    detail: Valid username and password grant access to the account overview.
+    priority: Critical
+    source: observed
+    verification: [ui, api]
+
+  - id: REQ-AUTH-002
+    area: AUTH
+    title: Login with invalid credentials is rejected
+    detail: >
+      A wrong username, a wrong password, or both must be refused, and the
+      error message must not reveal which of the two was wrong.
+    priority: Critical
+    source: derived
+    verification: [ui, api]
+
+  - id: REQ-AUTH-003
+    area: AUTH
+    title: Login with empty credentials is rejected
+    detail: An empty username or password is refused with a validation message.
+    priority: High
+    source: derived
+    verification: [ui]
+
+  - id: REQ-AUTH-004
+    area: AUTH
+    title: A logged-in customer can log out
+    detail: Logging out ends the session and returns the customer to the login page.
+    priority: High
+    source: derived
+    verification: [ui]
+
+  - id: REQ-AUTH-005
+    area: AUTH
+    title: A new customer can register
+    detail: >
+      Registration creates a customer with an opening account. Needed so tests
+      can create their own data instead of competing for the shared demo user.
+    priority: High
+    source: assumed
+    verification: [ui, api]
+
+  # --- Accounts --------------------------------------------------------------
+  - id: REQ-ACCT-001
+    area: ACCT
+    title: A customer can view their list of accounts
+    detail: The overview lists every account belonging to the customer with its balance.
+    priority: Critical
+    source: observed
+    verification: [ui, api]
+
+  - id: REQ-ACCT-002
+    area: ACCT
+    title: A customer can view the detail of a single account
+    detail: Account detail shows identifier, type and balance.
+    priority: High
+    source: observed
+    verification: [ui, api]
+
+  - id: REQ-ACCT-003
+    area: ACCT
+    title: Account balances shown in the interface match the system of record
+    detail: >
+      The balance rendered in the browser equals the balance returned by the
+      service and the value recorded in the certification data store.
+    priority: Critical
+    source: derived
+    verification: [ui, api, database]
+
+  - id: REQ-ACCT-004
+    area: ACCT
+    title: A customer can open a new account
+    detail: A new account can be opened, funded from an existing account.
+    priority: Medium
+    source: assumed
+    verification: [ui, api]
+
+  # --- Funds transfer --------------------------------------------------------
+  - id: REQ-XFER-001
+    area: XFER
+    title: A customer can transfer funds between their own accounts
+    detail: A valid transfer moves the stated amount from one account to another.
+    priority: Critical
+    source: observed
+    verification: [ui, api, database]
+
+  - id: REQ-XFER-002
+    area: XFER
+    title: A transfer debits the source and credits the destination by the same amount
+    detail: >
+      After a transfer of amount A, the source balance falls by exactly A and
+      the destination balance rises by exactly A. No money is created or lost.
+    priority: Critical
+    source: derived
+    verification: [api, database]
+
+  - id: REQ-XFER-003
+    area: XFER
+    title: A transfer of zero or a negative amount is rejected
+    detail: Amounts at or below zero are not valid transfer amounts.
+    priority: High
+    source: assumed
+    verification: [ui, api]
+
+  - id: REQ-XFER-004
+    area: XFER
+    title: A transfer with a non-numeric or malformed amount is rejected
+    detail: Text, symbols and excessive decimal precision are refused with a validation message.
+    priority: High
+    source: assumed
+    verification: [ui, api]
+
+  - id: REQ-XFER-005
+    area: XFER
+    title: A transfer to a non-existent destination account is rejected
+    detail: An unknown destination account identifier does not result in a completed transfer.
+    priority: High
+    source: assumed
+    verification: [ui, api, database]
+
+  - id: REQ-XFER-006
+    area: XFER
+    title: A completed transfer produces a transaction record on both accounts
+    detail: Each side of the transfer appears in that account's transaction history.
+    priority: Critical
+    source: derived
+    verification: [ui, api, database]
+
+  # --- Bill payment ----------------------------------------------------------
+  - id: REQ-BILL-001
+    area: BILL
+    title: A customer can pay a bill from an account
+    detail: A valid bill payment debits the chosen account by the stated amount.
+    priority: High
+    source: observed
+    verification: [ui, api, database]
+
+  - id: REQ-BILL-002
+    area: BILL
+    title: Bill payment rejects incomplete or invalid payee details
+    detail: Missing required payee fields are refused with validation messages.
+    priority: Medium
+    source: assumed
+    verification: [ui]
+
+  - id: REQ-BILL-003
+    area: BILL
+    title: A completed bill payment produces a transaction record
+    detail: The payment appears in the source account's transaction history.
+    priority: High
+    source: derived
+    verification: [api, database]
+
+  # --- Transaction history ---------------------------------------------------
+  - id: REQ-TXN-001
+    area: TXN
+    title: A customer can view an account's transaction history
+    detail: The history lists transactions for the selected account.
+    priority: High
+    source: observed
+    verification: [ui, api]
+
+  - id: REQ-TXN-002
+    area: TXN
+    title: Transaction history can be filtered
+    detail: History can be searched by amount and by date range.
+    priority: Medium
+    source: observed
+    verification: [api]
+
+  - id: REQ-TXN-003
+    area: TXN
+    title: A transaction record carries account, amount, type and date
+    detail: Every transaction returned includes those four fields with correct types.
+    priority: High
+    source: derived
+    verification: [api, database]
+
+  # --- Data integrity and reconciliation -------------------------------------
+  - id: REQ-DATA-001
+    area: DATA
+    title: Transaction data can be extracted into the certification data store
+    detail: Accounts and transactions are extracted from the service into PostgreSQL.
+    priority: Critical
+    source: derived
+    verification: [database]
+
+  - id: REQ-DATA-002
+    area: DATA
+    title: A settlement file can be produced from transaction data
+    detail: A settlement file is generated with transaction identifier, account, amount, type and timestamp.
+    priority: Critical
+    source: derived
+    verification: [reconciliation]
+
+  - id: REQ-DATA-003
+    area: DATA
+    title: Reconciliation detects every class of break
+    detail: >
+      Comparing the settlement file against the data store detects missing
+      records, duplicate records, amount mismatches and account mismatches.
+    priority: Critical
+    source: derived
+    verification: [reconciliation]
+
+  - id: REQ-DATA-004
+    area: DATA
+    title: Reconciliation produces a report with a pass or fail status
+    detail: Totals, matched, missing, duplicates, mismatches and an overall status.
+    priority: High
+    source: derived
+    verification: [reconciliation]
+
+  # --- Security-adjacent -----------------------------------------------------
+  - id: REQ-SEC-001
+    area: SEC
+    title: Customer financial data must require authentication
+    detail: >
+      Reading account or transaction data must require an authenticated
+      session. Phase 1 observed the REST services returning full account data
+      with no credentials supplied.
+    priority: Critical
+    source: derived
+    verification: [security, api]
+
+  - id: REQ-SEC-002
+    area: SEC
+    title: A customer cannot access another customer's accounts
+    detail: Requesting an account belonging to another customer must be refused.
+    priority: Critical
+    source: derived
+    verification: [security, api]
+
+  - id: REQ-SEC-003
+    area: SEC
+    title: Credentials must not be transmitted in a URL path
+    detail: >
+      URLs are recorded in access logs, browser history and proxy logs.
+      Phase 1 observed a login endpoint taking username and password as path
+      segments.
+    priority: High
+    source: derived
+    verification: [security]
+
+  - id: REQ-SEC-004
+    area: SEC
+    title: Restricted pages are not reachable without a session
+    detail: Requesting an authenticated page directly without logging in does not return customer data.
+    priority: Critical
+    source: derived
+    verification: [security, ui]
+
+  # --- Accessibility ---------------------------------------------------------
+  - id: REQ-ACC-001
+    area: ACC
+    title: Key pages have no critical or serious automated accessibility violations
+    detail: >
+      Login, account overview and transfer pages pass an automated axe-core
+      scan at WCAG 2.1 level AA for critical and serious impact rules.
+    priority: High
+    source: derived
+    verification: [accessibility]
+
+  - id: REQ-ACC-002
+    area: ACC
+    title: Every form input has a programmatically associated label
+    detail: Screen reader users must be able to identify each field.
+    priority: High
+    source: derived
+    verification: [accessibility]
+
+  - id: REQ-ACC-003
+    area: ACC
+    title: Key workflows are operable by keyboard alone
+    detail: >
+      Login and transfer can be completed with keyboard only, with a visible
+      focus indicator and a sensible tab order. Verified manually, because
+      automated tools cannot confirm this.
+    priority: High
+    source: derived
+    verification: [accessibility]
+
+  # --- Performance -----------------------------------------------------------
+  - id: REQ-PERF-001
+    area: PERF
+    title: Login responds within the agreed threshold under load
+    detail: 95th percentile response time stays under the configured limit.
+    priority: Medium
+    source: derived
+    verification: [performance]
+
+  - id: REQ-PERF-002
+    area: PERF
+    title: Account retrieval responds within the agreed threshold under load
+    detail: 95th percentile response time stays under the configured limit.
+    priority: Medium
+    source: derived
+    verification: [performance]
+
+  - id: REQ-PERF-003
+    area: PERF
+    title: The error rate under load stays within the agreed threshold
+    detail: The proportion of failed requests stays under the configured limit.
+    priority: Medium
+    source: derived
+    verification: [performance]
