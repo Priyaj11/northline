@@ -41,3 +41,5 @@ env: up init health
 clean:
 	rm -rf .pytest_cache reports allure-results
 	find . -name "__pycache__" -type d -prune -exec rm -rf {} +
+reset:
+	$(PY) scripts/reset_sut_data.py

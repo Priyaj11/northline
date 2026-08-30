@@ -1,7 +1,16 @@
-# Phase 1 and 2 dependencies. Each later phase adds what it actually needs,
-# so the reason every package is here stays obvious.
+# Grouped by the phase that introduced each package, so the reason every
+# dependency exists stays obvious.
+
+# Phase 1 and 2: environment, configuration, generated documentation
 pytest==8.3.4
 requests==2.32.3
 python-dotenv==1.0.1
 psycopg[binary]==3.2.3
 PyYAML==6.0.2
+
+# Phase 3: automation framework
+playwright==1.49.1          # browser automation engine
+pytest-playwright==0.6.2    # pytest integration: page fixture, --browser flag
+pytest-xdist==3.6.1         # parallel execution across processes
+allure-pytest==2.13.5       # rich reporting with attachments
+Faker==33.1.0               # generated test data for isolated test customers

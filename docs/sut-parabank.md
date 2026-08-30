@@ -131,3 +131,57 @@ still holds after testing.
 There is also no logout endpoint in the REST interface. Session termination is
 a browser-side concern only, which constrains what Phase 5 can test about
 session timeout through the API.
+
+## Observation 4: response contract inconsistencies (Phase 3A discovery)
+
+Recorded from docs/sut-api-shapes.md, generated against the running instance.
+
+  Endpoint                       Status  Declared type    Body actually is
+  -----------------------------  ------  ---------------  -------------------
+  /login/{user}/{pass}           200     application/json JSON
+  /customers/{id}/accounts       200     application/json JSON
+  /accounts/{id}                 200     application/json JSON
+  /accounts/{id}/transactions    200     application/json JSON
+  /transfer                      200     application/json PLAIN ENGLISH TEXT
+  /accounts/99999999             400     text/plain       plain text
+
+Two problems.
+
+The transfer endpoint declares application/json and returns a sentence:
+"Successfully transferred $0.01 from account #12345 to account #12456".
+A client that trusts the declared content type and calls a JSON parser crashes.
+This is a genuine contract defect and is written up with evidence in Phase 6.
+
+Error responses use text/plain regardless of the Accept header, so every
+assertion must check the status before attempting to parse a body.
+
+## Observation 5: the transaction date is an integer
+
+The date field on a transaction is an integer, not a formatted date string,
+almost certainly epoch milliseconds. Consequences: type assertions must expect
+a number, plausibility must be checked by converting rather than parsing, and
+the date range filter's expected input format has to be established separately.
+
+## Observation 6: the login response includes a social security number field
+
+The customer record returned by the login endpoint carries an ssn field. The
+data is fabricated, but the shape matters given that the same service layer was
+observed in Phase 1 to require no authentication. Recorded for Phase 5.
+
+## Observation 7: the services content-negotiate
+
+The REST endpoints return XML by default and JSON only when the client sends
+an Accept: application/json header.
+
+    curl -s .../accounts/12345
+      -> <?xml version="1.0"?><account><id>12345</id>...
+
+    curl -s -H "Accept: application/json" .../accounts/12345
+      -> {"id":12345,"customerId":12212,...}
+
+Northline's API client sets the JSON Accept header for every request, which is
+why docs/sut-api-shapes.md records JSON structures.
+
+Consequence for Phase 3B: the Postman collection must set the same header
+explicitly. Without it, every JSON assertion fails against an XML body, which
+looks like a defect and is not.

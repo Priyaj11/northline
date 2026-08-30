@@ -26,6 +26,14 @@ def _env(name: str, default: str) -> str:
     return value
 
 
+def _env_bool(name: str, default: str) -> bool:
+    return _env(name, default).strip().lower() in ("1", "true", "yes", "on")
+
+
+def _env_int(name: str, default: str) -> int:
+    return int(_env(name, default))
+
+
 @dataclass(frozen=True)
 class SutConfig:
     """Where the System Under Test lives and how we log into it."""
@@ -48,7 +56,7 @@ class WarehouseConfig:
     """The PostgreSQL certification data store owned by Northline."""
 
     host: str = field(default_factory=lambda: _env("PGHOST", "localhost"))
-    port: int = field(default_factory=lambda: int(_env("PGPORT", "5432")))
+    port: int = field(default_factory=lambda: _env_int("PGPORT", "5433"))
     database: str = field(default_factory=lambda: _env("PGDATABASE", "northline"))
     user: str = field(default_factory=lambda: _env("PGUSER", "northline"))
     password: str = field(default_factory=lambda: _env("PGPASSWORD", "northline"))
@@ -62,15 +70,40 @@ class WarehouseConfig:
 
 
 @dataclass(frozen=True)
+class FrameworkConfig:
+    """How the test framework itself behaves.
+
+    Every value is an environment variable so the same suite runs unchanged on
+    a developer machine and in continuous integration. Continuous integration
+    typically sets HEADLESS=true and RETRIES=1; locally both default to the
+    values that make debugging easiest.
+    """
+
+    headless: bool = field(default_factory=lambda: _env_bool("HEADLESS", "true"))
+    slow_mo_ms: int = field(default_factory=lambda: _env_int("SLOW_MO_MS", "0"))
+    default_timeout_ms: int = field(default_factory=lambda: _env_int("DEFAULT_TIMEOUT_MS", "10000"))
+    api_timeout_s: int = field(default_factory=lambda: _env_int("API_TIMEOUT_S", "30"))
+    retries: int = field(default_factory=lambda: _env_int("RETRIES", "0"))
+    is_ci: bool = field(default_factory=lambda: _env_bool("CI", "false"))
+
+
+@dataclass(frozen=True)
 class Settings:
     environment: str = field(default_factory=lambda: _env("NORTHLINE_ENV", "local"))
     release: str = field(default_factory=lambda: _env("NORTHLINE_RELEASE", "unversioned"))
     sut: SutConfig = field(default_factory=SutConfig)
     warehouse: WarehouseConfig = field(default_factory=WarehouseConfig)
+    framework: FrameworkConfig = field(default_factory=FrameworkConfig)
     reports_dir: Path = field(default_factory=lambda: REPO_ROOT / "reports")
+
+    @property
+    def artifacts_dir(self) -> Path:
+        """Where screenshots, traces and videos from failed tests are written."""
+        return self.reports_dir / "artifacts"
 
 
 def get_settings() -> Settings:
     settings = Settings()
     settings.reports_dir.mkdir(parents=True, exist_ok=True)
+    settings.artifacts_dir.mkdir(parents=True, exist_ok=True)
     return settings
