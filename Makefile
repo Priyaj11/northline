@@ -1,6 +1,6 @@
 PY := .venv/bin/python
 
-.PHONY: help up down logs init health smoke env docs clean
+.PHONY: PY  help up down logs init health smoke docs env clean reset newman
 
 help:
 	@echo "up      - start ParaBank and the PostgreSQL certification data store"
@@ -10,6 +10,8 @@ help:
 	@echo "health  - verify the environment is READY to test"
 	@echo "smoke   - run the Phase 1 smoke tests"
 	@echo "docs    - regenerate all generated documentation"
+	@echo "reset   - wipe and reseed ParaBank demo data"
+	@echo "newman  - run the Postman collection headlessly"
 	@echo "env     - up, then init, then health, in order"
 	@echo "clean   - remove caches and generated reports"
 
@@ -43,3 +45,9 @@ clean:
 	find . -name "__pycache__" -type d -prune -exec rm -rf {} +
 reset:
 	$(PY) scripts/reset_sut_data.py
+
+newman:
+	newman run postman/northline.postman_collection.json \
+	  -e postman/northline.local.postman_environment.json \
+	  --reporters cli,junit \
+	  --reporter-junit-export reports/newman-junit.xml

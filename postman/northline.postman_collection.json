@@ -1,0 +1,297 @@
+{
+  "info": {
+    "name": "Northline - ParaBank API",
+    "description": "API checks for ParaBank, run interactively in Postman or headlessly with Newman.\n\nThis collection deliberately overlaps the pytest suite in tests/api/. It exists because it can run anywhere Node.js is available with no Python environment, it is readable by people who do not write Python, and Postman and Newman are named explicitly in most bank QA job descriptions.\n\nEvery request sets Accept: application/json. ParaBank content-negotiates and returns XML by default, so without that header every JSON assertion fails for a reason that looks like a defect and is not.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080/parabank/services/bank" },
+    { "key": "username", "value": "john" },
+    { "key": "password", "value": "demo" },
+    { "key": "nonExistentAccountId", "value": "99999999" },
+    { "key": "customerId", "value": "" },
+    { "key": "firstAccountId", "value": "" },
+    { "key": "secondAccountId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Login (TC-AUTH-002 / REQ-AUTH-001)",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Accept", "value": "application/json" }],
+        "url": {
+          "raw": "{{baseUrl}}/login/{{username}}/{{password}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["login", "{{username}}", "{{password}}"]
+        },
+        "description": "Credentials are passed as URL path segments. Recorded as REQ-SEC-003 and tested by TC-SEC-005. The collection mirrors the application as it is."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('body is JSON', function () {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "const body = pm.response.json();",
+              "",
+              "pm.test('customer record has the expected fields and types', function () {",
+              "    pm.expect(body.id).to.be.a('number');",
+              "    pm.expect(body.firstName).to.be.a('string');",
+              "    pm.expect(body.lastName).to.be.a('string');",
+              "    pm.expect(body.phoneNumber).to.be.a('string');",
+              "});",
+              "",
+              "pm.test('address is a structured object', function () {",
+              "    pm.expect(body.address).to.be.an('object');",
+              "    pm.expect(body.address.street).to.be.a('string');",
+              "    pm.expect(body.address.city).to.be.a('string');",
+              "    pm.expect(body.address.state).to.be.a('string');",
+              "    pm.expect(body.address.zipCode).to.be.a('string');",
+              "});",
+              "",
+              "pm.collectionVariables.set('customerId', body.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Customer accounts (TC-ACCT-002 / REQ-ACCT-001)",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Accept", "value": "application/json" }],
+        "url": {
+          "raw": "{{baseUrl}}/customers/{{customerId}}/accounts",
+          "host": ["{{baseUrl}}"],
+          "path": ["customers", "{{customerId}}", "accounts"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const accounts = pm.response.json();",
+              "",
+              "pm.test('returns a non-empty list', function () {",
+              "    pm.expect(accounts).to.be.an('array').that.is.not.empty;",
+              "});",
+              "",
+              "pm.test('every account has the expected fields and types', function () {",
+              "    accounts.forEach(function (a) {",
+              "        pm.expect(a.id, 'id').to.be.a('number');",
+              "        pm.expect(a.customerId, 'customerId').to.be.a('number');",
+              "        pm.expect(a.type, 'type').to.be.a('string');",
+              "        pm.expect(a.balance, 'balance').to.be.a('number');",
+              "    });",
+              "});",
+              "",
+              "pm.test('every account belongs to the requested customer', function () {",
+              "    const expected = Number(pm.collectionVariables.get('customerId'));",
+              "    accounts.forEach(function (a) {",
+              "        pm.expect(a.customerId, 'account ' + a.id).to.eql(expected);",
+              "    });",
+              "});",
+              "",
+              "pm.collectionVariables.set('firstAccountId', accounts[0].id);",
+              "if (accounts.length > 1) {",
+              "    pm.collectionVariables.set('secondAccountId', accounts[1].id);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Single account (TC-ACCT-002 / REQ-ACCT-002)",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Accept", "value": "application/json" }],
+        "url": {
+          "raw": "{{baseUrl}}/accounts/{{firstAccountId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["accounts", "{{firstAccountId}}"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const account = pm.response.json();",
+              "",
+              "pm.test('account has the expected fields and types', function () {",
+              "    pm.expect(account.id).to.be.a('number');",
+              "    pm.expect(account.customerId).to.be.a('number');",
+              "    pm.expect(account.type).to.be.a('string');",
+              "    pm.expect(account.balance).to.be.a('number');",
+              "});",
+              "",
+              "pm.test('the account returned is the one requested', function () {",
+              "    pm.expect(account.id).to.eql(Number(pm.collectionVariables.get('firstAccountId')));",
+              "});",
+              "",
+              "pm.test('responds within 2000 ms', function () {",
+              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Account transactions (TC-TXN-004 / REQ-TXN-003)",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Accept", "value": "application/json" }],
+        "url": {
+          "raw": "{{baseUrl}}/accounts/{{firstAccountId}}/transactions",
+          "host": ["{{baseUrl}}"],
+          "path": ["accounts", "{{firstAccountId}}", "transactions"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const txns = pm.response.json();",
+              "",
+              "pm.test('returns a list', function () {",
+              "    pm.expect(txns).to.be.an('array');",
+              "});",
+              "",
+              "pm.test('every transaction has the expected fields and types', function () {",
+              "    txns.forEach(function (t) {",
+              "        pm.expect(t.id, 'id').to.be.a('number');",
+              "        pm.expect(t.accountId, 'accountId').to.be.a('number');",
+              "        pm.expect(t.type, 'type').to.be.a('string');",
+              "        pm.expect(t.date, 'date').to.be.a('number');",
+              "        pm.expect(t.amount, 'amount').to.be.a('number');",
+              "        pm.expect(t.description, 'description').to.be.a('string');",
+              "    });",
+              "});",
+              "",
+              "pm.test('dates convert to plausible calendar dates', function () {",
+              "    const earliest = Date.UTC(1990, 0, 1);",
+              "    const latest = Date.UTC(2100, 0, 1);",
+              "    txns.forEach(function (t) {",
+              "        pm.expect(t.date, 'transaction ' + t.id + ' date ' + t.date)",
+              "          .to.be.within(earliest, latest);",
+              "    });",
+              "});",
+              "",
+              "pm.test('every transaction belongs to the requested account', function () {",
+              "    const expected = Number(pm.collectionVariables.get('firstAccountId'));",
+              "    txns.forEach(function (t) {",
+              "        pm.expect(t.accountId, 'transaction ' + t.id).to.eql(expected);",
+              "    });",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Non-existent account (TC-ACCT-004 / REQ-ACCT-002)",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Accept", "value": "application/json" }],
+        "url": {
+          "raw": "{{baseUrl}}/accounts/{{nonExistentAccountId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["accounts", "{{nonExistentAccountId}}"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('rejects with a 4xx client error, not a 5xx', function () {",
+              "    pm.expect(pm.response.code, 'status').to.be.within(400, 499);",
+              "});",
+              "",
+              "pm.test('the error names the account that was not found', function () {",
+              "    pm.expect(pm.response.text()).to.include(pm.collectionVariables.get('nonExistentAccountId'));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transfer contract check (DEF-002)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Accept", "value": "application/json" }],
+        "url": {
+          "raw": "{{baseUrl}}/transfer?fromAccountId={{firstAccountId}}&toAccountId={{secondAccountId}}&amount=0.01",
+          "host": ["{{baseUrl}}"],
+          "path": ["transfer"],
+          "query": [
+            { "key": "fromAccountId", "value": "{{firstAccountId}}" },
+            { "key": "toAccountId", "value": "{{secondAccountId}}" },
+            { "key": "amount", "value": "0.01" }
+          ]
+        },
+        "description": "Moves one cent between two of the demo customer's own accounts. Run against a reset environment or accept the one cent shift."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('a valid transfer returns 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "// DEF-002, a known contract defect. The endpoint declares",
+              "// Content-Type: application/json and returns plain English text.",
+              "// Asserting the broken behaviour on purpose is the Newman equivalent of",
+              "// a strict expected failure: this test goes red the moment the defect is",
+              "// fixed, which forces the collection to be updated rather than quietly",
+              "// drifting out of date.",
+              "pm.test('DEF-002 still reproduces: JSON declared, plain text returned', function () {",
+              "    const declared = pm.response.headers.get('Content-Type') || '';",
+              "    pm.expect(declared.toLowerCase(), 'declared content type').to.include('json');",
+              "    let parsed = true;",
+              "    try { pm.response.json(); } catch (e) { parsed = false; }",
+              "    pm.expect(parsed, 'body parses as JSON').to.be.false;",
+              "});",
+              "",
+              "pm.test('the response text confirms the transfer', function () {",
+              "    pm.expect(pm.response.text()).to.include('transferred');",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
