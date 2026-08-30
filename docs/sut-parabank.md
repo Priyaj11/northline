@@ -185,3 +185,33 @@ why docs/sut-api-shapes.md records JSON structures.
 Consequence for Phase 3B: the Postman collection must set the same header
 explicitly. Without it, every JSON assertion fails against an XML body, which
 looks like a defect and is not.
+
+## Observation 8: no username enumeration on the login form (positive finding)
+
+TC-AUTH-005 verified in Chromium on 2026-08-30 that the browser login form
+returns the same error message for a valid username with a wrong password as it
+does for a username that does not exist.
+
+Differing messages would let an attacker confirm which usernames exist by
+reading the response, which is username enumeration. ParaBank does not have
+that weakness on this form.
+
+Recorded because a verification that passes is evidence too. A record showing
+only defects gives no signal about what was actually checked.
+
+## Observation 9: no cross-browser differences found (positive finding)
+
+Run on 2026-08-30. The 14 functional browser tests were executed in Chromium,
+Firefox and WebKit. All 42 executions passed, with no behavioural differences
+between engines.
+
+Cross-browser problems usually surface in form control behaviour, date handling
+and layout-dependent waits. ParaBank's markup is plain enough that none of those
+differ here.
+
+The visual baselines are stored per browser, because font rendering and form
+control appearance do differ between engines even where behaviour does not. A
+baseline from one browser is not valid for another.
+
+Recorded because a verification that passes is evidence too, and because
+claiming cross-browser coverage is only honest if it has actually been run.

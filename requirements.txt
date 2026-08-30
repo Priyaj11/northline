@@ -14,3 +14,4 @@ pytest-playwright==0.6.2    # pytest integration: page fixture, --browser flag
 pytest-xdist==3.6.1         # parallel execution across processes
 allure-pytest==2.13.5       # rich reporting with attachments
 Faker==33.1.0               # generated test data for isolated test customers
+Pillow==11.0.0              # image comparison for visual regression

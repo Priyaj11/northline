@@ -1,6 +1,6 @@
 PY := .venv/bin/python
 
-.PHONY: PY  help up down logs init health smoke docs env clean reset newman
+.PHONY: help up down logs init health smoke docs env clean reset newman ui ui-all-browsers
 
 help:
 	@echo "up      - start ParaBank and the PostgreSQL certification data store"
@@ -12,6 +12,8 @@ help:
 	@echo "docs    - regenerate all generated documentation"
 	@echo "reset   - wipe and reseed ParaBank demo data"
 	@echo "newman  - run the Postman collection headlessly"
+	@echo "ui      - run the browser tests in Chromium"
+	@echo "ui-all-browsers - run them in Chromium, Firefox and WebKit"
 	@echo "env     - up, then init, then health, in order"
 	@echo "clean   - remove caches and generated reports"
 
@@ -51,3 +53,18 @@ newman:
 	  -e postman/northline.local.postman_environment.json \
 	  --reporters cli,junit \
 	  --reporter-junit-export reports/newman-junit.xml
+
+ui:
+	$(PY) -m pytest -m ui -v \
+	  --browser chromium \
+	  --screenshot=only-on-failure \
+	  --video=retain-on-failure \
+	  --tracing=retain-on-failure \
+	  --output=reports/artifacts
+
+ui-all-browsers:
+	$(PY) -m pytest -m ui -v \
+	  --browser chromium --browser firefox --browser webkit \
+	  --screenshot=only-on-failure \
+	  --tracing=retain-on-failure \
+	  --output=reports/artifacts
