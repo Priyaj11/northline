@@ -215,3 +215,76 @@ baseline from one browser is not valid for another.
 
 Recorded because a verification that passes is evidence too, and because
 claiming cross-browser coverage is only honest if it has actually been run.
+
+## Observation 10: the seeded demo data contains self-contradictory records
+
+Established by experiment on 2026-08-30, not assumed.
+
+Four seeded transactions have a type that contradicts their own description:
+
+    id     account  type   amount    description
+    13699  12345    Debit     0.00   Funds Transfer Sent
+    13810  13122    Debit     0.00   Funds Transfer Received
+    14032  13233    Debit   100.00   Funds Transfer Received
+    14365  13344    Debit  1000.00   Funds Transfer Received
+
+Three are described as received but typed as a debit. Any downstream system
+that sums by type rather than by description gets a wrong total for those
+accounts. Two also carry an amount of 0.00, even though TC-XFER-004 confirmed
+the application rejects a transfer of zero.
+
+## Why this is NOT recorded as a defect
+
+The obvious conclusion would be that ParaBank writes transaction records
+incorrectly. That conclusion is wrong, and the experiment that settled it was:
+
+  1. Reset with cleanDB plus initializeDB, extract, run the query. The same four
+     records appear with the same identifiers, so they come from the seed.
+  2. Perform a live transfer of 42.00 from account 12567 to account 12789,
+     extract, inspect the two records the application just wrote:
+
+         12567  Debit   42.00  Funds Transfer Sent
+         12789  Credit  42.00  Funds Transfer Received
+
+     Correct on both sides.
+
+The application writes correct records today. The inconsistency is a property
+of the demo dataset shipped with the image, not of the code under test.
+
+Recording it as a defect would have been an overclaim, and one that anyone
+running the same two commands could disprove. The general point: when data
+looks wrong, establish whether the system produced it or inherited it before
+writing anything down.
+
+## What was done instead
+
+tests/database/test_data_quality.py takes a baseline of the existing
+inconsistencies, performs a transfer, and asserts that no NEW inconsistency
+appeared. It also asserts positively that a transfer writes a matched
+Debit/Sent and Credit/Received pair for the same amount.
+
+Asserting perfection against a known-imperfect starting state produces a
+permanently red suite that everyone learns to ignore. Asserting "no worse than
+the baseline" keeps the check meaningful.
+
+## Transaction vocabulary observed
+
+    types:        Credit, Debit
+    descriptions: Funds Transfer Sent, Funds Transfer Received,
+                  Bill Payment to <payee>, Check # <number>
+
+## Correction to Observation 10, 2026-08-30
+
+Observation 10 stated that two seeded transactions carry an amount of 0.00
+"even though TC-XFER-004 confirmed the application rejects a transfer of zero".
+
+That parenthetical was wrong. The application does NOT reject a transfer of
+zero. See the amendment to DEF-001: a transfer of 0.00 returns 200 and writes a
+record on both accounts.
+
+The zero-amount seeded records are therefore not anomalies at all. They are
+exactly what a zero-amount transfer produces, and their presence in the seed is
+consistent with the application's actual behaviour.
+
+The type-versus-description contradictions in Observation 10 stand unchanged.
+Those were established by experiment and remain seed-only.

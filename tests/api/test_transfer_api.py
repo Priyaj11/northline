@@ -121,6 +121,14 @@ def test_invalid_amounts_do_not_move_money(
     A negative transfer that succeeds moves money in the opposite direction,
     which is a Critical severity defect. The status code is recorded in the log
     either way; the assertion is about the money.
+
+    Known limitation of this assertion, recorded rather than hidden. The 0.00
+    case passes here even though the application ACCEPTS the request, because a
+    zero-amount transfer leaves the balances unchanged either way. At this layer
+    "refused" and "accepted with no monetary effect" are indistinguishable.
+
+    That gap is closed in tests/database/test_data_quality.py, which asserts
+    that no record was written. See the amendment to DEF-001.
     """
     source, destination = account_pair
     before_source = balance_of(source)

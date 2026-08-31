@@ -68,3 +68,9 @@ ui-all-browsers:
 	  --screenshot=only-on-failure \
 	  --tracing=retain-on-failure \
 	  --output=reports/artifacts
+
+extract:
+	$(PY) scripts/extract.py
+
+db:
+	$(PY) -m pytest -m database -v -s
