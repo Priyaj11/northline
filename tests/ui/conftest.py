@@ -26,27 +26,6 @@ import pytest
 from utils.config import Settings
 
 
-@pytest.fixture(scope="session")
-def base_url(settings: Settings) -> str:
-    """The application root, so tests navigate with relative paths."""
-    return settings.sut.base_url
-
-
-@pytest.fixture(scope="session")
-def browser_context_args(browser_context_args: dict[str, Any]) -> dict[str, Any]:
-    """Extend pytest-playwright's context settings.
-
-    A fixed viewport matters for the visual regression suite: a screenshot taken
-    at one window size will never match a baseline taken at another, and the
-    resulting failure looks like a layout defect when it is only a window size.
-    """
-    return {
-        **browser_context_args,
-        "viewport": {"width": 1280, "height": 900},
-        "ignore_https_errors": True,
-    }
-
-
 @pytest.fixture(autouse=True)
 def _apply_default_timeout(page, settings: Settings):
     """Apply the configured timeout to every browser action.

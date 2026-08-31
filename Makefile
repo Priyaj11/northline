@@ -80,3 +80,9 @@ settlement:
 
 recon:
 	$(PY) -m pytest -m reconciliation -v
+
+a11y:
+	$(PY) scripts/scan_accessibility.py
+
+a11y-test:
+	$(PY) -m pytest -m accessibility -v --browser chromium

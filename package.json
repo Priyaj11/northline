@@ -1,0 +1,9 @@
+{
+  "name": "northline",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Test tooling dependencies for the Northline framework. Python is the primary language; these are the JavaScript tools the test framework drives.",
+  "devDependencies": {
+    "axe-core": "4.13.0"
+  }
+}

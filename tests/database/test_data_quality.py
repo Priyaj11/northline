@@ -94,6 +94,7 @@ def test_a_transfer_writes_a_matched_debit_and_credit_pair(api: ApiClient, re_ex
 
 @pytest.mark.xfail(
     strict=True,
+    raises=AssertionError,
     reason=(
         "DEF-001 as amended: ParaBank does not validate the transfer amount at "
         "all. A transfer of 0.00 returns 200 and writes a record on both "

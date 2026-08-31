@@ -121,3 +121,39 @@ def pytest_configure(config):
     s = get_settings()
     log.info("Northline run | environment=%s | release=%s | SUT=%s",
              s.environment, s.release, s.sut.base_url)
+
+
+# --- browser fixtures -------------------------------------------------------
+# These live at the root rather than under tests/ui/ because more than one
+# suite drives a browser: the UI suite and the accessibility suite. A fixture
+# defined in a subfolder's conftest is invisible to sibling folders, which is
+# how the accessibility suite ended up navigating to "None/index.htm".
+#
+# Neither of these launches a browser on its own, so suites that never ask for
+# a page are unaffected.
+
+
+@pytest.fixture(scope="session")
+def base_url(settings: Settings) -> str:
+    """The application root, so tests navigate with relative paths.
+
+    Overrides the pytest-base-url plugin's fixture, which is None unless
+    --base-url is passed on the command line.
+    """
+    return settings.sut.base_url
+
+
+@pytest.fixture(scope="session")
+def browser_context_args(browser_context_args: dict) -> dict:
+    """Extend pytest-playwright's context settings.
+
+    A fixed viewport matters for the visual regression suite: a screenshot taken
+    at one window size will never match a baseline taken at another. It also
+    keeps accessibility results comparable, since colour contrast and layout
+    rules can depend on what is actually rendered.
+    """
+    return {
+        **browser_context_args,
+        "viewport": {"width": 1280, "height": 900},
+        "ignore_https_errors": True,
+    }

@@ -106,7 +106,8 @@ DEF_001 = (
         pytest.param(
             "-0.01",
             "TC-XFER-005: one step below the boundary",
-            marks=pytest.mark.xfail(strict=True, reason=DEF_001),
+            marks=pytest.mark.xfail(strict=True, raises=AssertionError,
+                                    reason=DEF_001),
         ),
         pytest.param(
             "-500.00",
@@ -184,6 +185,7 @@ def test_a_transfer_to_the_same_account_nets_to_zero(
 
 @pytest.mark.xfail(
     strict=True,
+    raises=AssertionError,
     reason=(
         "Known contract defect found in Phase 3A discovery: the transfer endpoint "
         "declares Content-Type: application/json but returns plain English text. "
@@ -202,5 +204,18 @@ def test_the_transfer_response_body_matches_its_declared_content_type(
     """
     source, destination = account_pair
     response = api.transfer(source, destination, "0.01")
-    if "json" in response.headers.get("content-type", "").lower():
+
+    declared = response.headers.get("content-type", "").lower()
+    if "json" not in declared:
+        pytest.skip(f"The endpoint no longer declares JSON, it declares {declared!r}")
+
+    try:
         response.json()
+        parses = True
+    except ValueError:
+        parses = False
+
+    assert parses, (
+        f"The endpoint declares Content-Type {declared!r} but the body does not "
+        f"parse as JSON. Body: {response.text.strip()[:120]!r}"
+    )
