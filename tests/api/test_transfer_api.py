@@ -87,13 +87,15 @@ def test_the_smallest_valid_amount_is_accepted(
 
 
 DEF_001 = (
-    "DEF-001: ParaBank accepts negative transfer amounts and moves money in "
-    "reverse. Confirmed on 2026-08-30: a transfer of -500.00 returned 200 and "
-    "credited the source by 500.00. Amount 0.00 is correctly rejected, so the "
-    "validation appears to test for non-zero rather than for a positive amount. "
-    "Marked strict so the suite fails if the behaviour is fixed without these "
-    "tests being updated. The release gate reads the defect register, not this "
-    "mark, so the open Critical defect still forces a NO-GO."
+    "DEF-001 as amended: ParaBank does not validate the transfer amount at all. "
+    "Negative amounts are accepted and move money in reverse, confirmed "
+    "2026-08-30 when -500.00 returned 200 and credited the source by 500.00. "
+    "Zero amounts are also accepted and write records, which this layer cannot "
+    "detect because no money moves either way; that is covered by "
+    "tests/database/test_data_quality.py. Marked strict so the suite fails if "
+    "the behaviour is fixed without these tests being updated. The release gate "
+    "reads the defect register, not this mark, so the open Critical defect "
+    "still forces a NO-GO."
 )
 
 

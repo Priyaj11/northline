@@ -74,3 +74,9 @@ extract:
 
 db:
 	$(PY) -m pytest -m database -v -s
+
+settlement:
+	$(PY) scripts/reconcile.py
+
+recon:
+	$(PY) -m pytest -m reconciliation -v
