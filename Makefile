@@ -102,3 +102,6 @@ perf:
 	  sleep 5; \
 	done
 	$(PY) scripts/analyse_performance.py
+
+jira:
+	$(PY) scripts/generate_jira_import.py

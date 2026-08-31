@@ -15,10 +15,12 @@ asked for.
 
 ## Honesty note
 
-No test has been executed yet and no defect has been raised, so the result and
-defect columns read 'not executed' and 'none'. They are filled from real
-execution data in Phase 6 and Phase 7. A traceability matrix that shows results
-which never happened is worse than no matrix at all.
+The defect column is populated from defects/register.yaml and reflects defects
+actually raised against the named test case.
+
+The result column still reads 'not executed'. Test outcomes are attached in
+Phase 7 from the JUnit XML a real run produces. A traceability matrix that
+shows results which never happened is worse than no matrix at all.
 
 Coverage here means a requirement has at least one test case. It does not mean
 the requirement is fully verified.
@@ -52,6 +54,22 @@ the requirement is fully verified.
 | State Transition Testing | 6 |
 | Decision Table Testing | 1 |
 | Pairwise Testing | 1 |
+
+## Requirements with defects raised against them
+
+| Requirement | Area | Defect | Severity | Priority | Status |
+| --- | --- | --- | --- | --- | --- |
+| REQ-XFER-003 | XFER | [DEF-001](../defects/DEF-001.md) | Critical | P1 | Open |
+| REQ-TXN-003 | TXN | [DEF-002](../defects/DEF-002.md) | Medium | P3 | Open |
+| REQ-SEC-001 | SEC | [DEF-005](../defects/DEF-005.md) | Critical | P1 | Open |
+| REQ-SEC-002 | SEC | [DEF-005](../defects/DEF-005.md) | Critical | P1 | Open |
+| REQ-SEC-003 | SEC | [DEF-006](../defects/DEF-006.md) | High | P2 | Open |
+| REQ-ACC-001 | ACC | [DEF-004](../defects/DEF-004.md) | Medium | P3 | Open |
+| REQ-ACC-002 | ACC | [DEF-003](../defects/DEF-003.md) | High | P2 | Open |
+
+7 of 41 requirements have at least one
+defect raised against them.
+
 
 ## Matrix
 
@@ -101,10 +119,10 @@ the requirement is fully verified.
 | REQ-XFER-001 | Critical | observed | TC-XFER-002 Transfer through the service interface | Equivalence Partitioning | planned | none | not executed |
 | REQ-XFER-001 | Critical | observed | TC-XFER-016 Transfer across browsers and account types, reduced by pairwise selection | Pairwise Testing | planned | none | not executed |
 | REQ-XFER-002 | Critical | derived | TC-XFER-003 The source is debited and the destination credited by the same amount | Equivalence Partitioning | planned | none | not executed |
-| REQ-XFER-003 | High | assumed | TC-XFER-004 Reject a transfer of zero | Boundary Value Analysis | planned | none | not executed |
-| REQ-XFER-003 | High | assumed | TC-XFER-005 Reject a transfer just below zero | Boundary Value Analysis | planned | none | not executed |
+| REQ-XFER-003 | High | assumed | TC-XFER-004 Reject a transfer of zero | Boundary Value Analysis | planned | **DEF-001** (Critical) | not executed |
+| REQ-XFER-003 | High | assumed | TC-XFER-005 Reject a transfer just below zero | Boundary Value Analysis | planned | **DEF-001** (Critical) | not executed |
 | REQ-XFER-003 | High | assumed | TC-XFER-006 Accept the smallest valid amount | Boundary Value Analysis | planned | none | not executed |
-| REQ-XFER-003 | High | assumed | TC-XFER-007 Reject a clearly negative amount | Equivalence Partitioning | planned | none | not executed |
+| REQ-XFER-003 | High | assumed | TC-XFER-007 Reject a clearly negative amount | Equivalence Partitioning | planned | **DEF-001** (Critical) | not executed |
 | REQ-XFER-004 | High | assumed | TC-XFER-008 Reject a non-numeric amount | Negative Testing | planned | none | not executed |
 | REQ-XFER-004 | High | assumed | TC-XFER-009 Reject an empty amount | Boundary Value Analysis | planned | none | not executed |
 | REQ-XFER-004 | High | assumed | TC-XFER-010 Handle an amount with more than two decimal places | Boundary Value Analysis | planned | none | not executed |
@@ -148,23 +166,23 @@ the requirement is fully verified.
 
 | Requirement | Priority | Source | Test case | Technique | Automation | Defect | Result |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-SEC-001 | Critical | derived | TC-SEC-001 Account data requires authentication | Negative Testing | planned | none | not executed |
-| REQ-SEC-001 | Critical | derived | TC-SEC-002 Transaction data requires authentication | Negative Testing | planned | none | not executed |
-| REQ-SEC-002 | Critical | derived | TC-SEC-003 A customer cannot read another customer's account | Negative Testing | planned | none | not executed |
+| REQ-SEC-001 | Critical | derived | TC-SEC-001 Account data requires authentication | Negative Testing | planned | **DEF-005** (Critical) | not executed |
+| REQ-SEC-001 | Critical | derived | TC-SEC-002 Transaction data requires authentication | Negative Testing | planned | **DEF-005** (Critical) | not executed |
+| REQ-SEC-002 | Critical | derived | TC-SEC-003 A customer cannot read another customer's account | Negative Testing | planned | **DEF-005** (Critical) | not executed |
 | REQ-SEC-002 | Critical | derived | TC-SEC-004 A customer cannot transfer from another customer's account | Negative Testing | planned | none | not executed |
-| REQ-SEC-003 | High | derived | TC-SEC-005 Credentials are not transmitted in the URL path | Negative Testing | planned | none | not executed |
+| REQ-SEC-003 | High | derived | TC-SEC-005 Credentials are not transmitted in the URL path | Negative Testing | planned | **DEF-006** (High) | not executed |
 | REQ-SEC-004 | Critical | derived | TC-SEC-006 An authenticated page is not reachable without a session | State Transition Testing | planned | none | not executed |
 | REQ-SEC-004 | Critical | derived | TC-SEC-007 Behaviour of a session after the browser session ends | State Transition Testing | planned | none | not executed |
-| REQ-SEC-004 | Critical | derived | TC-SEC-008 Input validation on the transfer amount is enforced server side | Negative Testing | planned | none | not executed |
+| REQ-SEC-004 | Critical | derived | TC-SEC-008 Input validation on the transfer amount is enforced server side | Negative Testing | planned | **DEF-001** (Critical) | not executed |
 
 ### ACC - Accessibility
 
 | Requirement | Priority | Source | Test case | Technique | Automation | Defect | Result |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-ACC-001 | High | derived | TC-ACC-001 Automated scan of the login page | Equivalence Partitioning | planned | none | not executed |
-| REQ-ACC-001 | High | derived | TC-ACC-002 Automated scan of the account overview page | Equivalence Partitioning | planned | none | not executed |
-| REQ-ACC-001 | High | derived | TC-ACC-003 Automated scan of the transfer page | Equivalence Partitioning | planned | none | not executed |
-| REQ-ACC-002 | High | derived | TC-ACC-004 Every form input has an associated label | Equivalence Partitioning | planned | none | not executed |
+| REQ-ACC-001 | High | derived | TC-ACC-001 Automated scan of the login page | Equivalence Partitioning | planned | **DEF-004** (Medium) | not executed |
+| REQ-ACC-001 | High | derived | TC-ACC-002 Automated scan of the account overview page | Equivalence Partitioning | planned | **DEF-004** (Medium) | not executed |
+| REQ-ACC-001 | High | derived | TC-ACC-003 Automated scan of the transfer page | Equivalence Partitioning | planned | **DEF-004** (Medium) | not executed |
+| REQ-ACC-002 | High | derived | TC-ACC-004 Every form input has an associated label | Equivalence Partitioning | planned | **DEF-003** (High) | not executed |
 | REQ-ACC-002 | High | derived | TC-ACC-007 Validation errors are announced, not only shown in colour | Negative Testing | planned | none | not executed |
 | REQ-ACC-003 | High | derived | TC-ACC-005 Complete a login using the keyboard alone | State Transition Testing | manual | none | not executed |
 | REQ-ACC-003 | High | derived | TC-ACC-006 Complete a transfer using the keyboard alone | State Transition Testing | manual | none | not executed |

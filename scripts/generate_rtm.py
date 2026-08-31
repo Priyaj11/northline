@@ -33,10 +33,18 @@ log = get_logger("generate_rtm")
 REPO_ROOT = Path(__file__).resolve().parent.parent
 REGISTER = REPO_ROOT / "requirements.yaml"
 CASE_DIR = REPO_ROOT / "test-cases"
+DEFECT_REGISTER = REPO_ROOT / "defects" / "register.yaml"
 OUTPUT = REPO_ROOT / "docs" / "requirements-traceability-matrix.md"
 
 NOT_EXECUTED = "not executed"
 NO_DEFECT = "none"
+
+
+def load_defects() -> list[dict]:
+    """The defect register, if it exists yet."""
+    if not DEFECT_REGISTER.exists():
+        return []
+    return yaml.safe_load(DEFECT_REGISTER.read_text()).get("defects", [])
 
 
 def load_cases() -> list[dict]:
@@ -62,6 +70,18 @@ def main() -> int:
     by_requirement: dict[str, list[dict]] = defaultdict(list)
     for case in cases:
         by_requirement[case["requirement"]].append(case)
+
+    # Defects are linked in two directions. A defect names the requirements it
+    # violates and the test cases that found it, so the matrix can show, for any
+    # row, whether that specific test case raised something.
+    defects = load_defects()
+    defects_by_case: dict[str, list[dict]] = defaultdict(list)
+    defects_by_requirement: dict[str, list[dict]] = defaultdict(list)
+    for defect in defects:
+        for cid in defect.get("test_cases", []):
+            defects_by_case[cid].append(defect)
+        for rid in defect.get("requirements", []):
+            defects_by_requirement[rid].append(defect)
 
     req_ids = {r["id"] for r in requirements}
     orphans = sorted({c["requirement"] for c in cases} - req_ids)
@@ -91,10 +111,12 @@ def main() -> int:
         "",
         "## Honesty note",
         "",
-        "No test has been executed yet and no defect has been raised, so the result and",
-        "defect columns read 'not executed' and 'none'. They are filled from real",
-        "execution data in Phase 6 and Phase 7. A traceability matrix that shows results",
-        "which never happened is worse than no matrix at all.",
+        "The defect column is populated from defects/register.yaml and reflects defects",
+        "actually raised against the named test case.",
+        "",
+        "The result column still reads 'not executed'. Test outcomes are attached in",
+        "Phase 7 from the JUnit XML a real run produces. A traceability matrix that",
+        "shows results which never happened is worse than no matrix at all.",
         "",
         "Coverage here means a requirement has at least one test case. It does not mean",
         "the requirement is fully verified.",
@@ -121,6 +143,31 @@ def main() -> int:
     for technique, count in sorted(technique_counts.items(), key=lambda kv: -kv[1]):
         lines.append(f"| {technique} | {count} |")
 
+    if defects:
+        lines += [
+            "",
+            "## Requirements with defects raised against them",
+            "",
+            "| Requirement | Area | Defect | Severity | Priority | Status |",
+            "| --- | --- | --- | --- | --- | --- |",
+        ]
+        for req in requirements:
+            for defect in defects_by_requirement.get(req["id"], []):
+                lines.append(
+                    f"| {req['id']} | {req['area']} | "
+                    f"[{defect['id']}](../defects/{defect['document']}) | "
+                    f"{defect['severity']} | {defect['priority']} | {defect['status']} |"
+                )
+        covered_with_defects = len({
+            r["id"] for r in requirements if defects_by_requirement.get(r["id"])
+        })
+        lines += [
+            "",
+            f"{covered_with_defects} of {len(requirements)} requirements have at least one",
+            "defect raised against them.",
+            "",
+        ]
+
     lines += ["", "## Matrix", ""]
 
     for code, area_name in areas.items():
@@ -145,10 +192,14 @@ def main() -> int:
                 automation = case["automation"]
                 if case.get("automated_test"):
                     automation = f"{automation}: `{case['automated_test']}`"
+                raised = defects_by_case.get(case["id"], [])
+                defect_cell = ", ".join(
+                    f"**{d['id']}** ({d['severity']})" for d in raised
+                ) or NO_DEFECT
                 lines.append(
                     f"| {req['id']} | {req['priority']} | {req['source']} | "
                     f"{case['id']} {case['title']} | {case['technique']} | "
-                    f"{automation} | {NO_DEFECT} | {NOT_EXECUTED} |"
+                    f"{automation} | {defect_cell} | {NOT_EXECUTED} |"
                 )
         lines.append("")
 
