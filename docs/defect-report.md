@@ -19,12 +19,12 @@ reopen rate, no time to fix and no fix effectiveness.
 
 ## Release impact
 
-    total defects                6
-    open                         6
-    open and release blocking    4
+    total defects                7
+    open                         7
+    open and release blocking    5
 
 GATE-CRITICAL-DEFECT fails a release on any open defect of severity
-Critical or High. Currently blocking: DEF-001, DEF-003, DEF-005, DEF-006
+Critical or High. Currently blocking: DEF-001, DEF-003, DEF-005, DEF-006, DEF-007
 
 The gate reads THIS register, not the test results. Several of these defects
 have their tests marked as expected failures so the suite stays green for new
@@ -40,12 +40,13 @@ regressions, and marking a test does not remove its defect from the gate.
 | [DEF-004](../defects/DEF-004.md) | Page-level accessibility failures on every page | Medium | P3 | Open | REQ-ACC-001 | Phase 5 |
 | [DEF-005](../defects/DEF-005.md) | The REST services require no authentication | Critical | P1 | Open | REQ-SEC-001, REQ-SEC-002 | Phase 5 |
 | [DEF-006](../defects/DEF-006.md) | Credentials are carried in the URL path | High | P2 | Open | REQ-SEC-003 | Phase 5 |
+| [DEF-007](../defects/DEF-007.md) | A transfer with sub-cent precision makes accounts permanently unreadable | Critical | P1 | Open | REQ-XFER-004, REQ-ACCT-001, REQ-ACCT-002 | Phase 7 |
 
 ### By severity
 
 | | Count |
 | --- | --- |
-| Critical | 2 |
+| Critical | 3 |
 | High | 2 |
 | Medium | 2 |
 | Low | 0 |
@@ -54,7 +55,7 @@ regressions, and marking a test does not remove its defect from the gate.
 
 | | Count |
 | --- | --- |
-| P1 | 2 |
+| P1 | 3 |
 | P2 | 2 |
 | P3 | 2 |
 | P4 | 0 |
@@ -63,14 +64,14 @@ regressions, and marking a test does not remove its defect from the gate.
 
 | | Count |
 | --- | --- |
-| Open | 6 |
+| Open | 7 |
 
 ### By detection layer
 
 | | Count |
 | --- | --- |
 | accessibility | 2 |
-| api | 2 |
+| api | 3 |
 | security | 2 |
 
 ### By requirement area
@@ -78,9 +79,10 @@ regressions, and marking a test does not remove its defect from the gate.
 | | Count |
 | --- | --- |
 | ACC | 2 |
+| ACCT | 2 |
 | SEC | 3 |
 | TXN | 1 |
-| XFER | 1 |
+| XFER | 2 |
 
 ### By phase in which it was detected
 
@@ -88,12 +90,13 @@ regressions, and marking a test does not remove its defect from the gate.
 | --- | --- |
 | Phase 3 | 2 |
 | Phase 5 | 4 |
+| Phase 7 | 1 |
 
 ### By detection method
 
 | Method | Count |
 | --- | --- |
-| designed test case | 5 |
+| designed test case | 6 |
 | exploratory | 1 |
 
 Detection method is recorded because a register that credits every defect to

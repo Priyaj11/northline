@@ -119,7 +119,7 @@ DEF_001 = (
 def test_invalid_amounts_do_not_move_money(
     api: ApiClient, account_pair: tuple[int, int], balance_of, amount: str, case: str
 ):
-    """REQ-XFER-003.
+    """TC-XFER-004, TC-XFER-005 and TC-XFER-007 / REQ-XFER-003.
 
     A negative transfer that succeeds moves money in the opposite direction,
     which is a Critical severity defect. The status code is recorded in the log

@@ -134,7 +134,7 @@ def test_a_record_duplicated_in_the_file_is_detected(ledger_records, settlement_
 
 
 def test_an_amount_altered_by_one_cent_is_detected(ledger_records, settlement_path):
-    """TC-DATA-003 / REQ-DATA-003.
+    """TC-DATA-005 / REQ-DATA-003.
 
     One cent, deliberately. A reconciler that only notices large differences
     would miss every rounding and conversion error, which is most of them.
@@ -161,7 +161,7 @@ def test_an_amount_altered_by_one_cent_is_detected(ledger_records, settlement_pa
 def test_an_account_changed_to_another_real_account_is_detected(
     ledger_records, settlement_path
 ):
-    """TC-DATA-003 / REQ-DATA-003.
+    """TC-DATA-006 / REQ-DATA-003.
 
     Another account that genuinely exists, because the realistic failure is
     money landing on somebody else's account rather than on one that does not

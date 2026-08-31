@@ -2,7 +2,7 @@
 
     release      R1.0
     environment  local
-    evaluated    2026-08-31T04:36:08.838877+00:00
+    evaluated    2026-08-31T05:16:17.024576+00:00
 
 ```
     DECISION: NO-GO
@@ -20,7 +20,7 @@ not a judgement call, and every figure traces to a file a run produced.
 | --- | --- | --- | --- | --- | --- |
 | GATE-ENV Environment readiness | **PASS** | passed | must_pass | NO-GO | `reports/environment.json` |
 | GATE-SMOKE Smoke suite | **PASS** | 0 | 0 | NO-GO | `reports/junit-smoke.xml` |
-| GATE-CRITICAL-DEFECT Critical and high defects | **FAIL** | 4 | 0 | NO-GO | `reports/defects.json` |
+| GATE-CRITICAL-DEFECT Critical and high defects | **FAIL** | 5 | 0 | NO-GO | `reports/defects.json` |
 | GATE-RECON Settlement reconciliation | **PASS** | 0 | 0 | NO-GO | `reports/reconciliation-report.json` |
 | GATE-API-PASS API suite pass rate | **PASS** | 100.0 | 100 | NO-GO | `reports/junit-api.xml` |
 | GATE-UI-PASS UI regression pass rate | **PASS** | 100.0 | 95 | CONDITIONAL-GO | `reports/junit-ui.xml` |
@@ -34,11 +34,11 @@ not a judgement call, and every figure traces to a file a run produced.
 ### GATE-CRITICAL-DEFECT Critical and high defects
 
     rule       No open defect of severity Critical or High
-    observed   4
+    observed   5
     threshold  0
     evidence   reports/defects.json
 
-4.0 against a maximum of 0.0 open defects allowed
+5.0 against a maximum of 0.0 open defects allowed
 
 ## Recorded concerns
 

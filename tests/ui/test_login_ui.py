@@ -85,7 +85,7 @@ def test_the_error_message_does_not_reveal_which_credential_was_wrong(
 def test_empty_credentials_are_refused(
     login_page: LoginPage, username: str, password: str, case: str
 ):
-    """TC-AUTH-006 to TC-AUTH-008 / REQ-AUTH-003, boundary value analysis.
+    """TC-AUTH-006, TC-AUTH-007 and TC-AUTH-008 / REQ-AUTH-003, boundary value analysis.
 
     The boundary here is zero characters. A blank field must not create a
     session, whatever the message says.

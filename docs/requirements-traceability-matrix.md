@@ -71,7 +71,10 @@ the requirement is fully verified.
 
 | Requirement | Area | Defect | Severity | Priority | Status |
 | --- | --- | --- | --- | --- | --- |
+| REQ-ACCT-001 | ACCT | [DEF-007](../defects/DEF-007.md) | Critical | P1 | Open |
+| REQ-ACCT-002 | ACCT | [DEF-007](../defects/DEF-007.md) | Critical | P1 | Open |
 | REQ-XFER-003 | XFER | [DEF-001](../defects/DEF-001.md) | Critical | P1 | Open |
+| REQ-XFER-004 | XFER | [DEF-007](../defects/DEF-007.md) | Critical | P1 | Open |
 | REQ-TXN-003 | TXN | [DEF-002](../defects/DEF-002.md) | Medium | P3 | Open |
 | REQ-SEC-001 | SEC | [DEF-005](../defects/DEF-005.md) | Critical | P1 | Open |
 | REQ-SEC-002 | SEC | [DEF-005](../defects/DEF-005.md) | Critical | P1 | Open |
@@ -79,7 +82,7 @@ the requirement is fully verified.
 | REQ-ACC-001 | ACC | [DEF-004](../defects/DEF-004.md) | Medium | P3 | Open |
 | REQ-ACC-002 | ACC | [DEF-003](../defects/DEF-003.md) | High | P2 | Open |
 
-7 of 41 requirements have at least one
+10 of 41 requirements have at least one
 defect raised against them.
 
 
@@ -137,7 +140,7 @@ defect raised against them.
 | REQ-XFER-003 | High | assumed | TC-XFER-007 Reject a clearly negative amount | Equivalence Partitioning | planned | **DEF-001** (Critical) | see the results copy |
 | REQ-XFER-004 | High | assumed | TC-XFER-008 Reject a non-numeric amount | Negative Testing | planned | none | see the results copy |
 | REQ-XFER-004 | High | assumed | TC-XFER-009 Reject an empty amount | Boundary Value Analysis | planned | none | see the results copy |
-| REQ-XFER-004 | High | assumed | TC-XFER-010 Handle an amount with more than two decimal places | Boundary Value Analysis | planned | none | see the results copy |
+| REQ-XFER-004 | High | assumed | TC-XFER-010 Handle an amount with more than two decimal places | Boundary Value Analysis | planned | **DEF-007** (Critical) | see the results copy |
 | REQ-XFER-004 | High | assumed | TC-XFER-011 Reject an amount containing a currency symbol or separators | Negative Testing | planned | none | see the results copy |
 | REQ-XFER-005 | High | assumed | TC-XFER-012 Reject a transfer to an account that does not exist | Negative Testing | planned | none | see the results copy |
 | REQ-XFER-005 | High | assumed | TC-XFER-013 Handle a transfer where source and destination are the same account | Decision Table Testing | planned | none | see the results copy |

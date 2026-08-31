@@ -44,7 +44,7 @@ def test_a_protected_page_returns_no_customer_data_without_a_session(
 def test_the_session_ends_when_the_customer_logs_out(
     page, base_url: str, settings: Settings
 ):
-    """TC-SEC-004 / REQ-SEC-004, the logged-out to logged-in transition reversed.
+    """TC-AUTH-010 and TC-SEC-004 / REQ-SEC-004, the logged-in to logged-out transition.
 
     A page address noted while logged in must stop working after logging out.
     Browsers keep history, and a shared or stolen machine makes this a real

@@ -114,7 +114,7 @@ def test_the_scan_runs_and_returns_a_usable_result(scan, page_key: str):
                    reason=DEF_003 + " " + DEF_004)
 @pytest.mark.parametrize("page_key", sorted(BASELINE))
 def test_key_pages_have_no_critical_or_serious_violations(scan, page_key: str):
-    """TC-ACC-001 to TC-ACC-003 / REQ-ACC-001, as the requirement states it."""
+    """TC-ACC-001, TC-ACC-002 and TC-ACC-003 / REQ-ACC-001, as the requirement states it."""
     result = scan(page_key)
     failing = violations(result, FAILING_IMPACTS)
     assert not failing, (

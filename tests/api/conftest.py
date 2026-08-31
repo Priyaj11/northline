@@ -55,3 +55,21 @@ def balance_of(api: ApiClient):
         body = json_body(api.account(account_id))
         return Decimal(str(body["balance"]))
     return _read
+
+
+@pytest.fixture
+def reset_sut_after(api: ApiClient):
+    """Reset the application's data after the test, whatever happens.
+
+    Needed by TC-XFER-010, which triggers DEF-007: the transfer it performs
+    leaves accounts the application cannot read, so every test running
+    afterwards fails on unrelated account reads.
+
+    A test that corrupts the environment must clean up after itself. Without
+    this, one deliberate boundary case makes the rest of the suite report
+    failures that have nothing to do with what they were testing, which is
+    exactly the confusion this defect caused when it was first hit.
+    """
+    yield
+    api.clean_db()
+    api.initialize_db()

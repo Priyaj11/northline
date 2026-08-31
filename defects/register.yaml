@@ -111,3 +111,22 @@ defects:
     detection_layer: security
     reproducibility: consistent
     document: DEF-006.md
+
+  - id: DEF-007
+    title: A transfer with sub-cent precision makes accounts permanently unreadable
+    severity: Critical
+    priority: P1
+    status: Open
+    requirements: [REQ-XFER-004, REQ-ACCT-001, REQ-ACCT-002]
+    test_cases: [TC-XFER-010]
+    detected_in_phase: 7
+    detected_on: 2026-08-31
+    detection_method: designed test case
+    detection_layer: api
+    reproducibility: consistent
+    document: DEF-007.md
+    note: >
+      Found by boundary value analysis on decimal precision. The application
+      accepts a balance it cannot subsequently read, so the write path and the
+      read path disagree about what a balance may contain. Recoverable only by
+      destroying all data.

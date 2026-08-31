@@ -2,7 +2,7 @@
 
     release      R1.0
     environment  local
-    generated    2026-08-31T04:50:06.613079+00:00
+    generated    2026-08-31T05:17:06.278393+00:00
 
 ```
     RELEASE DECISION: NO-GO
@@ -16,10 +16,10 @@ rather than estimating it.
 
 | Measure | Value |
 | --- | --- |
-| Test cases recorded in the run | 106 |
-| Executed | 88 |
+| Test cases recorded in the run | 114 |
+| Executed | 94 |
 | Not passed | 0 |
-| Skipped or expected failure | 18 |
+| Skipped or expected failure | 20 |
 | Pass rate | 100.0 percent |
 
 Expected failures are counted as skipped, which is how pytest records them
@@ -33,7 +33,7 @@ than these results.
 | Suite | Recorded | Executed | Not passed | Expected failures | Pass rate | Source |
 | --- | --- | --- | --- | --- | --- | --- |
 | Smoke | 5 | 5 | 0 | 0 | 100.0% | `reports/junit-smoke.xml` |
-| API | 23 | 20 | 0 | 3 | 100.0% | `reports/junit-api.xml` |
+| API | 31 | 26 | 0 | 5 | 100.0% | `reports/junit-api.xml` |
 | User interface | 14 | 14 | 0 | 0 | 100.0% | `reports/junit-ui.xml` |
 | Database and ledger | 16 | 15 | 0 | 1 | 100.0% | `reports/junit-database.xml` |
 | Reconciliation | 18 | 18 | 0 | 0 | 100.0% | `reports/junit-reconciliation.xml` |
@@ -42,15 +42,15 @@ than these results.
 
 ## Defects
 
-    total                        6
-    open                         6
-    open and release blocking    4
+    total                        7
+    open                         7
+    open and release blocking    5
 
 ### By severity
 
 | Severity | Count |
 | --- | --- |
-| Critical | 2 |
+| Critical | 3 |
 | High | 2 |
 | Medium | 2 |
 | Low | 0 |
@@ -61,12 +61,13 @@ than these results.
 | --- | --- |
 | Phase 3 | 2 |
 | Phase 5 | 4 |
+| Phase 7 | 1 |
 
 ### By detection method
 
 | Method | Count |
 | --- | --- |
-| designed test case | 5 |
+| designed test case | 6 |
 | exploratory | 1 |
 
 Detection stage answers a question a release board asks: was this found
@@ -80,7 +81,7 @@ that credits everything to the test design overstates it.
     test cases                   72
     requirements with a test     41
     coverage                     100.0 percent
-    requirements with a defect   7
+    requirements with a defect   10
 
 Coverage here means every requirement has at least one test case. It does
 NOT mean every requirement is fully verified: a requirement with one

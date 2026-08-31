@@ -22,7 +22,7 @@ settings = get_settings()
 
 @pytest.mark.smoke
 def test_sut_home_page_is_served():
-    """REQ-ENV-001: the ParaBank home page must be reachable."""
+    """TC-ENV-001 / REQ-ENV-001: the ParaBank home page must be reachable."""
     response = requests.get(settings.sut.home_url, timeout=15)
     assert response.status_code == 200, (
         f"Expected 200 from {settings.sut.home_url}, got {response.status_code}"
@@ -31,7 +31,7 @@ def test_sut_home_page_is_served():
 
 @pytest.mark.smoke
 def test_sut_home_page_does_not_redirect_to_initialisation():
-    """REQ-ENV-002: the home page must return 200 directly, not redirect to setup."""
+    """TC-ENV-002 / REQ-ENV-002: the home page must return 200 directly, not redirect."""
     response = requests.get(settings.sut.home_url, timeout=15, allow_redirects=False)
     assert response.status_code == 200, (
         f"Expected 200 with no redirect, got {response.status_code} "
@@ -43,14 +43,14 @@ def test_sut_home_page_does_not_redirect_to_initialisation():
 
 @pytest.mark.smoke
 def test_sut_home_page_looks_like_parabank():
-    """REQ-ENV-003: the served page must be ParaBank, not a default Tomcat page."""
+    """TC-ENV-003 / REQ-ENV-003: the served page must be ParaBank, not a default page."""
     response = requests.get(settings.sut.home_url, timeout=15)
     assert "ParaBank" in response.text, "Home page did not contain the text 'ParaBank'"
 
 
 @pytest.mark.smoke
 def test_sut_database_schema_exists():
-    """REQ-ENV-004: the admin page reads the Parameter table, so 200 proves the schema."""
+    """TC-ENV-004 / REQ-ENV-004: the admin page reads the Parameter table, so 200 proves it."""
     response = requests.get(f"{settings.sut.base_url}/admin.htm", timeout=30)
     assert response.status_code == 200, (
         f"Admin page returned {response.status_code}. The SUT database schema is missing."
@@ -59,7 +59,7 @@ def test_sut_database_schema_exists():
 
 @pytest.mark.smoke
 def test_certification_data_store_accepts_connections():
-    """REQ-ENV-005: the PostgreSQL certification data store must accept a connection."""
+    """TC-ENV-005 / REQ-ENV-005: the certification data store must accept a connection."""
     psycopg = pytest.importorskip("psycopg")
     with psycopg.connect(settings.warehouse.dsn, connect_timeout=10) as conn:
         with conn.cursor() as cur:
