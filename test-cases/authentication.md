@@ -9,18 +9,18 @@ Cases in this suite: 12
 
 | ID | Requirement | Title | Technique | Priority | Automation |
 | --- | --- | --- | --- | --- | --- |
-| TC-AUTH-001 | REQ-AUTH-001 | Log in with valid credentials | Equivalence Partitioning | Critical | planned |
-| TC-AUTH-002 | REQ-AUTH-001 | Log in through the service interface with valid credentials | Equivalence Partitioning | Critical | planned |
-| TC-AUTH-003 | REQ-AUTH-002 | Reject a valid username with a wrong password | Equivalence Partitioning | Critical | planned |
-| TC-AUTH-004 | REQ-AUTH-002 | Reject an unknown username | Equivalence Partitioning | Critical | planned |
-| TC-AUTH-005 | REQ-AUTH-002 | The error message does not reveal which credential was wrong | Negative Testing | High | planned |
-| TC-AUTH-006 | REQ-AUTH-003 | Reject an empty username | Boundary Value Analysis | High | planned |
-| TC-AUTH-007 | REQ-AUTH-003 | Reject an empty password | Boundary Value Analysis | High | planned |
-| TC-AUTH-008 | REQ-AUTH-003 | Reject both fields empty | Boundary Value Analysis | Medium | planned |
-| TC-AUTH-009 | REQ-AUTH-004 | Log out ends the session | State Transition Testing | High | planned |
-| TC-AUTH-010 | REQ-AUTH-004 | An account page is not reachable after logging out | State Transition Testing | Critical | planned |
-| TC-AUTH-011 | REQ-AUTH-005 | Register a new customer | Equivalence Partitioning | High | planned |
-| TC-AUTH-012 | REQ-AUTH-005 | Reject registration with a duplicate username | Negative Testing | Medium | planned |
+| TC-AUTH-001 | REQ-AUTH-001 | Log in with valid credentials | Equivalence Partitioning | Critical | automated |
+| TC-AUTH-002 | REQ-AUTH-001 | Log in through the service interface with valid credentials | Equivalence Partitioning | Critical | automated |
+| TC-AUTH-003 | REQ-AUTH-002 | Reject a valid username with a wrong password | Equivalence Partitioning | Critical | automated |
+| TC-AUTH-004 | REQ-AUTH-002 | Reject an unknown username | Equivalence Partitioning | Critical | automated |
+| TC-AUTH-005 | REQ-AUTH-002 | The error message does not reveal which credential was wrong | Negative Testing | High | automated |
+| TC-AUTH-006 | REQ-AUTH-003 | Reject an empty username | Boundary Value Analysis | High | automated |
+| TC-AUTH-007 | REQ-AUTH-003 | Reject an empty password | Boundary Value Analysis | High | automated |
+| TC-AUTH-008 | REQ-AUTH-003 | Reject both fields empty | Boundary Value Analysis | Medium | automated |
+| TC-AUTH-009 | REQ-AUTH-004 | Log out ends the session | State Transition Testing | High | automated |
+| TC-AUTH-010 | REQ-AUTH-004 | An account page is not reachable after logging out | State Transition Testing | Critical | automated |
+| TC-AUTH-011 | REQ-AUTH-005 | Register a new customer | Equivalence Partitioning | High | automated |
+| TC-AUTH-012 | REQ-AUTH-005 | Reject registration with a duplicate username | Negative Testing | Medium | automated |
 
 ## TC-AUTH-001 Log in with valid credentials
 
@@ -28,7 +28,7 @@ Cases in this suite: 12
 **Technique** Equivalence Partitioning  
 **Layer** ui  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/ui/test_login_ui.py::test_valid_credentials_reach_the_account_overview)  
 **Introduced in phase** 3
 
 **Preconditions** The application is provisioned and the demo customer exists.
@@ -49,7 +49,7 @@ Cases in this suite: 12
 **Technique** Equivalence Partitioning  
 **Layer** api  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/api/test_authentication_api.py::test_login_with_valid_credentials_returns_a_customer)  
 **Introduced in phase** 3
 
 **Preconditions** The application is provisioned.
@@ -68,7 +68,7 @@ Cases in this suite: 12
 **Technique** Equivalence Partitioning  
 **Layer** ui  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/api/test_authentication_api.py::test_login_with_invalid_credentials_returns_no_customer)  
 **Introduced in phase** 3
 
 **Preconditions** The demo customer exists.
@@ -89,7 +89,7 @@ Cases in this suite: 12
 **Technique** Equivalence Partitioning  
 **Layer** ui  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/api/test_authentication_api.py::test_login_with_invalid_credentials_returns_no_customer)  
 **Introduced in phase** 3
 
 **Preconditions** The username does not exist.
@@ -110,7 +110,7 @@ Cases in this suite: 12
 **Technique** Negative Testing  
 **Layer** security  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/ui/test_login_ui.py::test_the_error_message_does_not_reveal_which_credential_was_wrong)  
 **Introduced in phase** 5
 
 **Preconditions** One valid username and one unknown username are available.
@@ -131,7 +131,7 @@ Cases in this suite: 12
 **Technique** Boundary Value Analysis  
 **Layer** ui  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/ui/test_login_ui.py::test_empty_credentials_are_refused)  
 **Introduced in phase** 3
 
 **Preconditions** The login page is displayed.
@@ -151,7 +151,7 @@ Cases in this suite: 12
 **Technique** Boundary Value Analysis  
 **Layer** ui  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/ui/test_login_ui.py::test_empty_credentials_are_refused)  
 **Introduced in phase** 3
 
 **Preconditions** The login page is displayed.
@@ -171,7 +171,7 @@ Cases in this suite: 12
 **Technique** Boundary Value Analysis  
 **Layer** ui  
 **Priority** Medium  
-**Automation** planned  
+**Automation** automated (tests/ui/test_login_ui.py::test_empty_credentials_are_refused)  
 **Introduced in phase** 3
 
 **Preconditions** The login page is displayed.
@@ -190,7 +190,7 @@ Cases in this suite: 12
 **Technique** State Transition Testing  
 **Layer** ui  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/ui/test_accounts_ui.py::test_logging_out_returns_to_the_login_page)  
 **Introduced in phase** 3
 
 **Preconditions** A customer is logged in.
@@ -210,7 +210,7 @@ Cases in this suite: 12
 **Technique** State Transition Testing  
 **Layer** security  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/security/test_session_ui.py::test_the_session_ends_when_the_customer_logs_out)  
 **Introduced in phase** 5
 
 **Preconditions** A customer has logged in and then logged out.
@@ -230,7 +230,7 @@ Cases in this suite: 12
 **Technique** Equivalence Partitioning  
 **Layer** ui  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/ui/test_registration_ui.py::test_a_new_customer_can_register_and_is_signed_in)  
 **Introduced in phase** 3
 
 **Preconditions** The registration form is reachable and the username is unused.
@@ -251,7 +251,7 @@ Cases in this suite: 12
 **Technique** Negative Testing  
 **Layer** ui  
 **Priority** Medium  
-**Automation** planned  
+**Automation** automated (tests/ui/test_registration_ui.py::test_registering_a_username_that_already_exists_is_refused)  
 **Introduced in phase** 3
 
 **Preconditions** A customer with the chosen username already exists.

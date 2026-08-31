@@ -51,8 +51,8 @@ the requirement is fully verified.
 
 | Status | Count |
 | --- | --- |
-| automated | 5 |
-| planned | 65 |
+| automated | 67 |
+| planned | 3 |
 | manual | 2 |
 | deferred | 0 |
 
@@ -75,6 +75,7 @@ the requirement is fully verified.
 | REQ-ACCT-002 | ACCT | [DEF-007](../defects/DEF-007.md) | Critical | P1 | Open |
 | REQ-XFER-003 | XFER | [DEF-001](../defects/DEF-001.md) | Critical | P1 | Open |
 | REQ-XFER-004 | XFER | [DEF-007](../defects/DEF-007.md) | Critical | P1 | Open |
+| REQ-TXN-002 | TXN | [DEF-008](../defects/DEF-008.md) | Medium | P3 | Open |
 | REQ-TXN-003 | TXN | [DEF-002](../defects/DEF-002.md) | Medium | P3 | Open |
 | REQ-SEC-001 | SEC | [DEF-005](../defects/DEF-005.md) | Critical | P1 | Open |
 | REQ-SEC-002 | SEC | [DEF-005](../defects/DEF-005.md) | Critical | P1 | Open |
@@ -82,7 +83,7 @@ the requirement is fully verified.
 | REQ-ACC-001 | ACC | [DEF-004](../defects/DEF-004.md) | Medium | P3 | Open |
 | REQ-ACC-002 | ACC | [DEF-003](../defects/DEF-003.md) | High | P2 | Open |
 
-10 of 41 requirements have at least one
+11 of 41 requirements have at least one
 defect raised against them.
 
 
@@ -102,103 +103,103 @@ defect raised against them.
 
 | Requirement | Priority | Source | Test case | Technique | Automation | Defect | Result |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-AUTH-001 | Critical | observed | TC-AUTH-001 Log in with valid credentials | Equivalence Partitioning | planned | none | see the results copy |
-| REQ-AUTH-001 | Critical | observed | TC-AUTH-002 Log in through the service interface with valid credentials | Equivalence Partitioning | planned | none | see the results copy |
-| REQ-AUTH-002 | Critical | derived | TC-AUTH-003 Reject a valid username with a wrong password | Equivalence Partitioning | planned | none | see the results copy |
-| REQ-AUTH-002 | Critical | derived | TC-AUTH-004 Reject an unknown username | Equivalence Partitioning | planned | none | see the results copy |
-| REQ-AUTH-002 | Critical | derived | TC-AUTH-005 The error message does not reveal which credential was wrong | Negative Testing | planned | none | see the results copy |
-| REQ-AUTH-003 | High | derived | TC-AUTH-006 Reject an empty username | Boundary Value Analysis | planned | none | see the results copy |
-| REQ-AUTH-003 | High | derived | TC-AUTH-007 Reject an empty password | Boundary Value Analysis | planned | none | see the results copy |
-| REQ-AUTH-003 | High | derived | TC-AUTH-008 Reject both fields empty | Boundary Value Analysis | planned | none | see the results copy |
-| REQ-AUTH-004 | High | derived | TC-AUTH-009 Log out ends the session | State Transition Testing | planned | none | see the results copy |
-| REQ-AUTH-004 | High | derived | TC-AUTH-010 An account page is not reachable after logging out | State Transition Testing | planned | none | see the results copy |
-| REQ-AUTH-005 | High | assumed | TC-AUTH-011 Register a new customer | Equivalence Partitioning | planned | none | see the results copy |
-| REQ-AUTH-005 | High | assumed | TC-AUTH-012 Reject registration with a duplicate username | Negative Testing | planned | none | see the results copy |
+| REQ-AUTH-001 | Critical | observed | TC-AUTH-001 Log in with valid credentials | Equivalence Partitioning | automated: `tests/ui/test_login_ui.py::test_valid_credentials_reach_the_account_overview` | none | see the results copy |
+| REQ-AUTH-001 | Critical | observed | TC-AUTH-002 Log in through the service interface with valid credentials | Equivalence Partitioning | automated: `tests/api/test_authentication_api.py::test_login_with_valid_credentials_returns_a_customer` | none | see the results copy |
+| REQ-AUTH-002 | Critical | derived | TC-AUTH-003 Reject a valid username with a wrong password | Equivalence Partitioning | automated: `tests/api/test_authentication_api.py::test_login_with_invalid_credentials_returns_no_customer` | none | see the results copy |
+| REQ-AUTH-002 | Critical | derived | TC-AUTH-004 Reject an unknown username | Equivalence Partitioning | automated: `tests/api/test_authentication_api.py::test_login_with_invalid_credentials_returns_no_customer` | none | see the results copy |
+| REQ-AUTH-002 | Critical | derived | TC-AUTH-005 The error message does not reveal which credential was wrong | Negative Testing | automated: `tests/ui/test_login_ui.py::test_the_error_message_does_not_reveal_which_credential_was_wrong` | none | see the results copy |
+| REQ-AUTH-003 | High | derived | TC-AUTH-006 Reject an empty username | Boundary Value Analysis | automated: `tests/ui/test_login_ui.py::test_empty_credentials_are_refused` | none | see the results copy |
+| REQ-AUTH-003 | High | derived | TC-AUTH-007 Reject an empty password | Boundary Value Analysis | automated: `tests/ui/test_login_ui.py::test_empty_credentials_are_refused` | none | see the results copy |
+| REQ-AUTH-003 | High | derived | TC-AUTH-008 Reject both fields empty | Boundary Value Analysis | automated: `tests/ui/test_login_ui.py::test_empty_credentials_are_refused` | none | see the results copy |
+| REQ-AUTH-004 | High | derived | TC-AUTH-009 Log out ends the session | State Transition Testing | automated: `tests/ui/test_accounts_ui.py::test_logging_out_returns_to_the_login_page` | none | see the results copy |
+| REQ-AUTH-004 | High | derived | TC-AUTH-010 An account page is not reachable after logging out | State Transition Testing | automated: `tests/security/test_session_ui.py::test_the_session_ends_when_the_customer_logs_out` | none | see the results copy |
+| REQ-AUTH-005 | High | assumed | TC-AUTH-011 Register a new customer | Equivalence Partitioning | automated: `tests/ui/test_registration_ui.py::test_a_new_customer_can_register_and_is_signed_in` | none | see the results copy |
+| REQ-AUTH-005 | High | assumed | TC-AUTH-012 Reject registration with a duplicate username | Negative Testing | automated: `tests/ui/test_registration_ui.py::test_registering_a_username_that_already_exists_is_refused` | none | see the results copy |
 
 ### ACCT - Accounts
 
 | Requirement | Priority | Source | Test case | Technique | Automation | Defect | Result |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-ACCT-001 | Critical | observed | TC-ACCT-001 View the list of accounts in the browser | Equivalence Partitioning | planned | none | see the results copy |
-| REQ-ACCT-001 | Critical | observed | TC-ACCT-002 Retrieve the list of accounts through the service interface | Equivalence Partitioning | planned | none | see the results copy |
-| REQ-ACCT-002 | High | observed | TC-ACCT-003 View a single account's detail | Equivalence Partitioning | planned | none | see the results copy |
-| REQ-ACCT-002 | High | observed | TC-ACCT-004 Request an account identifier that does not exist | Negative Testing | planned | none | see the results copy |
-| REQ-ACCT-003 | Critical | derived | TC-ACCT-005 The balance in the browser matches the service and the data store | Equivalence Partitioning | planned | none | see the results copy |
-| REQ-ACCT-004 | Medium | assumed | TC-ACCT-006 Open a new account funded from an existing one | Equivalence Partitioning | planned | none | see the results copy |
+| REQ-ACCT-001 | Critical | observed | TC-ACCT-001 View the list of accounts in the browser | Equivalence Partitioning | automated: `tests/ui/test_accounts_ui.py::test_the_overview_lists_the_customers_accounts` | none | see the results copy |
+| REQ-ACCT-001 | Critical | observed | TC-ACCT-002 Retrieve the list of accounts through the service interface | Equivalence Partitioning | automated: `tests/api/test_accounts_api.py::test_customer_accounts_returns_a_list` | none | see the results copy |
+| REQ-ACCT-002 | High | observed | TC-ACCT-003 View a single account's detail | Equivalence Partitioning | automated: `tests/ui/test_accounts_ui.py::test_every_displayed_balance_matches_the_service` | none | see the results copy |
+| REQ-ACCT-002 | High | observed | TC-ACCT-004 Request an account identifier that does not exist | Negative Testing | automated: `tests/api/test_accounts_api.py::test_a_non_existent_account_returns_a_client_error` | none | see the results copy |
+| REQ-ACCT-003 | Critical | derived | TC-ACCT-005 The balance in the browser matches the service and the data store | Equivalence Partitioning | automated: `tests/database/test_extraction.py::test_every_stored_balance_matches_the_source` | none | see the results copy |
+| REQ-ACCT-004 | Medium | assumed | TC-ACCT-006 Open a new account funded from an existing one | Equivalence Partitioning | automated: `tests/ui/test_registration_ui.py::test_a_customer_can_open_a_new_account` | none | see the results copy |
 
 ### XFER - Funds transfer
 
 | Requirement | Priority | Source | Test case | Technique | Automation | Defect | Result |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-XFER-001 | Critical | observed | TC-XFER-001 Transfer a typical valid amount between two of the customer's accounts | Equivalence Partitioning | planned | none | see the results copy |
-| REQ-XFER-001 | Critical | observed | TC-XFER-002 Transfer through the service interface | Equivalence Partitioning | planned | none | see the results copy |
-| REQ-XFER-001 | Critical | observed | TC-XFER-016 Transfer across browsers and account types, reduced by pairwise selection | Pairwise Testing | planned | none | see the results copy |
-| REQ-XFER-002 | Critical | derived | TC-XFER-003 The source is debited and the destination credited by the same amount | Equivalence Partitioning | planned | none | see the results copy |
-| REQ-XFER-003 | High | assumed | TC-XFER-004 Reject a transfer of zero | Boundary Value Analysis | planned | **DEF-001** (Critical) | see the results copy |
-| REQ-XFER-003 | High | assumed | TC-XFER-005 Reject a transfer just below zero | Boundary Value Analysis | planned | **DEF-001** (Critical) | see the results copy |
-| REQ-XFER-003 | High | assumed | TC-XFER-006 Accept the smallest valid amount | Boundary Value Analysis | planned | none | see the results copy |
-| REQ-XFER-003 | High | assumed | TC-XFER-007 Reject a clearly negative amount | Equivalence Partitioning | planned | **DEF-001** (Critical) | see the results copy |
-| REQ-XFER-004 | High | assumed | TC-XFER-008 Reject a non-numeric amount | Negative Testing | planned | none | see the results copy |
-| REQ-XFER-004 | High | assumed | TC-XFER-009 Reject an empty amount | Boundary Value Analysis | planned | none | see the results copy |
-| REQ-XFER-004 | High | assumed | TC-XFER-010 Handle an amount with more than two decimal places | Boundary Value Analysis | planned | **DEF-007** (Critical) | see the results copy |
-| REQ-XFER-004 | High | assumed | TC-XFER-011 Reject an amount containing a currency symbol or separators | Negative Testing | planned | none | see the results copy |
-| REQ-XFER-005 | High | assumed | TC-XFER-012 Reject a transfer to an account that does not exist | Negative Testing | planned | none | see the results copy |
-| REQ-XFER-005 | High | assumed | TC-XFER-013 Handle a transfer where source and destination are the same account | Decision Table Testing | planned | none | see the results copy |
-| REQ-XFER-006 | Critical | derived | TC-XFER-014 A completed transfer appears in both accounts' transaction history | Equivalence Partitioning | planned | none | see the results copy |
-| REQ-XFER-007 | High | assumed | TC-XFER-015 Establish how a transfer exceeding the available balance is handled | Boundary Value Analysis | planned | none | see the results copy |
+| REQ-XFER-001 | Critical | observed | TC-XFER-001 Transfer a typical valid amount between two of the customer's accounts | Equivalence Partitioning | automated: `tests/ui/test_transfer_ui.py::test_a_valid_transfer_shows_a_confirmation` | none | see the results copy |
+| REQ-XFER-001 | Critical | observed | TC-XFER-002 Transfer through the service interface | Equivalence Partitioning | automated: `tests/api/test_transfer_api.py::test_a_valid_transfer_is_accepted` | none | see the results copy |
+| REQ-XFER-001 | Critical | observed | TC-XFER-016 Transfer across browsers and account types, reduced by pairwise selection | Pairwise Testing | automated: `tests/ui/test_transfer_pairwise_ui.py::test_a_transfer_from_each_pairwise_combination` | none | see the results copy |
+| REQ-XFER-002 | Critical | derived | TC-XFER-003 The source is debited and the destination credited by the same amount | Equivalence Partitioning | automated: `tests/database/test_transaction_correctness.py::test_a_transfer_debits_and_credits_the_ledger` | none | see the results copy |
+| REQ-XFER-003 | High | assumed | TC-XFER-004 Reject a transfer of zero | Boundary Value Analysis | automated: `tests/api/test_transfer_api.py::test_invalid_amounts_do_not_move_money` | **DEF-001** (Critical) | see the results copy |
+| REQ-XFER-003 | High | assumed | TC-XFER-005 Reject a transfer just below zero | Boundary Value Analysis | automated: `tests/api/test_transfer_api.py::test_invalid_amounts_do_not_move_money` | **DEF-001** (Critical) | see the results copy |
+| REQ-XFER-003 | High | assumed | TC-XFER-006 Accept the smallest valid amount | Boundary Value Analysis | automated: `tests/api/test_transfer_api.py::test_the_smallest_valid_amount_is_accepted` | none | see the results copy |
+| REQ-XFER-003 | High | assumed | TC-XFER-007 Reject a clearly negative amount | Equivalence Partitioning | automated: `tests/api/test_transfer_api.py::test_invalid_amounts_do_not_move_money` | **DEF-001** (Critical) | see the results copy |
+| REQ-XFER-004 | High | assumed | TC-XFER-008 Reject a non-numeric amount | Negative Testing | automated: `tests/api/test_transfer_validation_api.py::test_a_malformed_amount_does_not_move_money` | none | see the results copy |
+| REQ-XFER-004 | High | assumed | TC-XFER-009 Reject an empty amount | Boundary Value Analysis | automated: `tests/api/test_transfer_validation_api.py::test_a_malformed_amount_does_not_move_money` | none | see the results copy |
+| REQ-XFER-004 | High | assumed | TC-XFER-010 Handle an amount with more than two decimal places | Boundary Value Analysis | automated: `tests/api/test_transfer_validation_api.py::test_an_amount_with_excess_precision_debits_and_credits_the_same` | **DEF-007** (Critical) | see the results copy |
+| REQ-XFER-004 | High | assumed | TC-XFER-011 Reject an amount containing a currency symbol or separators | Negative Testing | automated: `tests/api/test_transfer_validation_api.py::test_a_malformed_amount_does_not_move_money` | none | see the results copy |
+| REQ-XFER-005 | High | assumed | TC-XFER-012 Reject a transfer to an account that does not exist | Negative Testing | automated: `tests/api/test_transfer_api.py::test_a_transfer_to_a_non_existent_account_does_not_debit_the_source` | none | see the results copy |
+| REQ-XFER-005 | High | assumed | TC-XFER-013 Handle a transfer where source and destination are the same account | Decision Table Testing | automated: `tests/api/test_transfer_api.py::test_a_transfer_to_the_same_account_nets_to_zero` | none | see the results copy |
+| REQ-XFER-006 | Critical | derived | TC-XFER-014 A completed transfer appears in both accounts' transaction history | Equivalence Partitioning | automated: `tests/database/test_transaction_correctness.py::test_a_transfer_writes_one_transaction_to_each_account` | none | see the results copy |
+| REQ-XFER-007 | High | assumed | TC-XFER-015 Establish how a transfer exceeding the available balance is handled | Boundary Value Analysis | automated: `tests/api/test_transfer_validation_api.py::test_a_transfer_of_exactly_the_available_balance_is_accepted` | none | see the results copy |
 
 ### BILL - Bill payment
 
 | Requirement | Priority | Source | Test case | Technique | Automation | Defect | Result |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-BILL-001 | High | observed | TC-BILL-001 Pay a bill with valid details | Equivalence Partitioning | planned | none | see the results copy |
-| REQ-BILL-001 | High | observed | TC-BILL-002 A bill payment debits the source account by the exact amount | Equivalence Partitioning | planned | none | see the results copy |
-| REQ-BILL-002 | Medium | assumed | TC-BILL-003 Reject a bill payment with missing payee details | Negative Testing | planned | none | see the results copy |
-| REQ-BILL-003 | High | derived | TC-BILL-004 A completed bill payment appears in the transaction history | Equivalence Partitioning | planned | none | see the results copy |
+| REQ-BILL-001 | High | observed | TC-BILL-001 Pay a bill with valid details | Equivalence Partitioning | automated: `tests/ui/test_billpay_ui.py::test_a_bill_payment_through_the_browser_is_confirmed` | none | see the results copy |
+| REQ-BILL-001 | High | observed | TC-BILL-002 A bill payment debits the source account by the exact amount | Equivalence Partitioning | automated: `tests/database/test_transaction_correctness.py::test_a_bill_payment_debits_the_source_account` | none | see the results copy |
+| REQ-BILL-002 | Medium | assumed | TC-BILL-003 Reject a bill payment with missing payee details | Negative Testing | automated: `tests/ui/test_billpay_ui.py::test_a_bill_payment_with_a_missing_payee_name_is_refused` | none | see the results copy |
+| REQ-BILL-003 | High | derived | TC-BILL-004 A completed bill payment appears in the transaction history | Equivalence Partitioning | automated: `tests/ui/test_billpay_ui.py::test_a_bill_payment_appears_in_the_account_activity` | none | see the results copy |
 
 ### TXN - Transaction history
 
 | Requirement | Priority | Source | Test case | Technique | Automation | Defect | Result |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-TXN-001 | High | observed | TC-TXN-001 View an account's transaction history | Equivalence Partitioning | planned | none | see the results copy |
-| REQ-TXN-002 | Medium | observed | TC-TXN-002 Filter transaction history by amount | Equivalence Partitioning | planned | none | see the results copy |
-| REQ-TXN-002 | Medium | observed | TC-TXN-003 Filter transaction history by date range | Boundary Value Analysis | planned | none | see the results copy |
-| REQ-TXN-003 | High | derived | TC-TXN-004 A transaction record carries account, amount, type and date | Equivalence Partitioning | planned | none | see the results copy |
+| REQ-TXN-001 | High | observed | TC-TXN-001 View an account's transaction history | Equivalence Partitioning | automated: `tests/ui/test_billpay_ui.py::test_the_account_activity_lists_transactions` | none | see the results copy |
+| REQ-TXN-002 | Medium | observed | TC-TXN-002 Filter transaction history by amount | Equivalence Partitioning | automated: `tests/api/test_transactions_api.py::test_filtering_transactions_by_amount_returns_only_that_amount` | none | see the results copy |
+| REQ-TXN-002 | Medium | observed | TC-TXN-003 Filter transaction history by date range | Boundary Value Analysis | automated: `tests/ui/test_billpay_ui.py::test_the_date_range_filter_rejects_a_malformed_date` | **DEF-008** (Medium) | see the results copy |
+| REQ-TXN-003 | High | derived | TC-TXN-004 A transaction record carries account, amount, type and date | Equivalence Partitioning | automated: `tests/api/test_transactions_api.py::test_transaction_records_have_the_expected_fields_and_types` | none | see the results copy |
 
 ### DATA - Data integrity and reconciliation
 
 | Requirement | Priority | Source | Test case | Technique | Automation | Defect | Result |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-DATA-001 | Critical | derived | TC-DATA-001 Extract accounts and transactions into the certification data store | Equivalence Partitioning | planned | none | see the results copy |
-| REQ-DATA-002 | Critical | derived | TC-DATA-002 Generate a settlement file from transaction data | Equivalence Partitioning | planned | none | see the results copy |
-| REQ-DATA-003 | Critical | derived | TC-DATA-003 Reconciliation detects a missing record | Negative Testing | planned | none | see the results copy |
-| REQ-DATA-003 | Critical | derived | TC-DATA-004 Reconciliation detects a duplicate record | Negative Testing | planned | none | see the results copy |
-| REQ-DATA-003 | Critical | derived | TC-DATA-005 Reconciliation detects an amount mismatch | Negative Testing | planned | none | see the results copy |
-| REQ-DATA-003 | Critical | derived | TC-DATA-006 Reconciliation detects an account mismatch | Negative Testing | planned | none | see the results copy |
-| REQ-DATA-004 | High | derived | TC-DATA-007 Reconciliation reports totals and an overall status | Equivalence Partitioning | planned | none | see the results copy |
+| REQ-DATA-001 | Critical | derived | TC-DATA-001 Extract accounts and transactions into the certification data store | Equivalence Partitioning | automated: `tests/database/test_extraction.py::test_the_schema_creates_the_expected_tables` | none | see the results copy |
+| REQ-DATA-002 | Critical | derived | TC-DATA-002 Generate a settlement file from transaction data | Equivalence Partitioning | automated: `tests/reconciliation/test_settlement_end_to_end.py::test_a_settlement_file_is_generated_from_the_ledger` | none | see the results copy |
+| REQ-DATA-003 | Critical | derived | TC-DATA-003 Reconciliation detects a missing record | Negative Testing | automated: `tests/reconciliation/test_reconciler.py::test_a_missing_record_is_detected` | none | see the results copy |
+| REQ-DATA-003 | Critical | derived | TC-DATA-004 Reconciliation detects a duplicate record | Negative Testing | automated: `tests/reconciliation/test_reconciler.py::test_identical_data_reconciles_cleanly` | none | see the results copy |
+| REQ-DATA-003 | Critical | derived | TC-DATA-005 Reconciliation detects an amount mismatch | Negative Testing | automated: `tests/reconciliation/test_settlement_end_to_end.py::test_an_amount_altered_by_one_cent_is_detected` | none | see the results copy |
+| REQ-DATA-003 | Critical | derived | TC-DATA-006 Reconciliation detects an account mismatch | Negative Testing | automated: `tests/reconciliation/test_settlement_end_to_end.py::test_an_account_changed_to_another_real_account_is_detected` | none | see the results copy |
+| REQ-DATA-004 | High | derived | TC-DATA-007 Reconciliation reports totals and an overall status | Equivalence Partitioning | automated: `tests/reconciliation/test_settlement_end_to_end.py::test_the_report_states_totals_and_an_overall_status` | none | see the results copy |
 
 ### SEC - Security-adjacent behaviour
 
 | Requirement | Priority | Source | Test case | Technique | Automation | Defect | Result |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-SEC-001 | Critical | derived | TC-SEC-001 Account data requires authentication | Negative Testing | planned | **DEF-005** (Critical) | see the results copy |
-| REQ-SEC-001 | Critical | derived | TC-SEC-002 Transaction data requires authentication | Negative Testing | planned | **DEF-005** (Critical) | see the results copy |
-| REQ-SEC-002 | Critical | derived | TC-SEC-003 A customer cannot read another customer's account | Negative Testing | planned | **DEF-005** (Critical) | see the results copy |
-| REQ-SEC-002 | Critical | derived | TC-SEC-004 A customer cannot transfer from another customer's account | Negative Testing | planned | none | see the results copy |
-| REQ-SEC-003 | High | derived | TC-SEC-005 Credentials are not transmitted in the URL path | Negative Testing | planned | **DEF-006** (High) | see the results copy |
-| REQ-SEC-004 | Critical | derived | TC-SEC-006 An authenticated page is not reachable without a session | State Transition Testing | planned | none | see the results copy |
-| REQ-SEC-004 | Critical | derived | TC-SEC-007 Behaviour of a session after the browser session ends | State Transition Testing | planned | none | see the results copy |
-| REQ-SEC-004 | Critical | derived | TC-SEC-008 Input validation on the transfer amount is enforced server side | Negative Testing | planned | **DEF-001** (Critical) | see the results copy |
+| REQ-SEC-001 | Critical | derived | TC-SEC-001 Account data requires authentication | Negative Testing | automated: `tests/security/test_service_authorization.py::test_account_data_requires_authentication` | **DEF-005** (Critical) | see the results copy |
+| REQ-SEC-001 | Critical | derived | TC-SEC-002 Transaction data requires authentication | Negative Testing | automated: `tests/security/test_service_authorization.py::test_transaction_data_requires_authentication` | **DEF-005** (Critical) | see the results copy |
+| REQ-SEC-002 | Critical | derived | TC-SEC-003 A customer cannot read another customer's account | Negative Testing | automated: `tests/security/test_service_authorization.py::test_one_customer_cannot_read_another_customers_account` | **DEF-005** (Critical) | see the results copy |
+| REQ-SEC-002 | Critical | derived | TC-SEC-004 A customer cannot transfer from another customer's account | Negative Testing | automated: `tests/security/test_session_ui.py::test_the_session_ends_when_the_customer_logs_out` | none | see the results copy |
+| REQ-SEC-003 | High | derived | TC-SEC-005 Credentials are not transmitted in the URL path | Negative Testing | automated: `tests/security/test_service_authorization.py::test_credentials_are_not_carried_in_the_url_path` | **DEF-006** (High) | see the results copy |
+| REQ-SEC-004 | Critical | derived | TC-SEC-006 An authenticated page is not reachable without a session | State Transition Testing | automated: `tests/security/test_session_ui.py::test_a_protected_page_returns_no_customer_data_without_a_session` | none | see the results copy |
+| REQ-SEC-004 | Critical | derived | TC-SEC-007 Behaviour of a session after the browser session ends | State Transition Testing | automated: `tests/security/test_session_ui.py::test_the_session_cookie_carries_its_protections` | none | see the results copy |
+| REQ-SEC-004 | Critical | derived | TC-SEC-008 Input validation on the transfer amount is enforced server side | Negative Testing | automated: `tests/security/test_service_authorization.py::test_amount_validation_is_enforced_on_the_server` | **DEF-001** (Critical) | see the results copy |
 
 ### ACC - Accessibility
 
 | Requirement | Priority | Source | Test case | Technique | Automation | Defect | Result |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-ACC-001 | High | derived | TC-ACC-001 Automated scan of the login page | Equivalence Partitioning | planned | **DEF-004** (Medium) | see the results copy |
-| REQ-ACC-001 | High | derived | TC-ACC-002 Automated scan of the account overview page | Equivalence Partitioning | planned | **DEF-004** (Medium) | see the results copy |
-| REQ-ACC-001 | High | derived | TC-ACC-003 Automated scan of the transfer page | Equivalence Partitioning | planned | **DEF-004** (Medium) | see the results copy |
-| REQ-ACC-002 | High | derived | TC-ACC-004 Every form input has an associated label | Equivalence Partitioning | planned | **DEF-003** (High) | see the results copy |
-| REQ-ACC-002 | High | derived | TC-ACC-007 Validation errors are announced, not only shown in colour | Negative Testing | planned | none | see the results copy |
+| REQ-ACC-001 | High | derived | TC-ACC-001 Automated scan of the login page | Equivalence Partitioning | automated: `tests/accessibility/test_axe_scans.py::test_key_pages_have_no_critical_or_serious_violations` | **DEF-004** (Medium) | see the results copy |
+| REQ-ACC-001 | High | derived | TC-ACC-002 Automated scan of the account overview page | Equivalence Partitioning | automated: `tests/accessibility/test_axe_scans.py::test_key_pages_have_no_critical_or_serious_violations` | **DEF-004** (Medium) | see the results copy |
+| REQ-ACC-001 | High | derived | TC-ACC-003 Automated scan of the transfer page | Equivalence Partitioning | automated: `tests/accessibility/test_axe_scans.py::test_key_pages_have_no_critical_or_serious_violations` | **DEF-004** (Medium) | see the results copy |
+| REQ-ACC-002 | High | derived | TC-ACC-004 Every form input has an associated label | Equivalence Partitioning | automated: `tests/accessibility/test_axe_scans.py::test_every_form_input_has_an_accessible_name` | **DEF-003** (High) | see the results copy |
+| REQ-ACC-002 | High | derived | TC-ACC-007 Validation errors are announced, not only shown in colour | Negative Testing | automated: `tests/accessibility/test_axe_scans.py::test_a_validation_error_is_conveyed_by_more_than_colour` | none | see the results copy |
 | REQ-ACC-003 | High | derived | TC-ACC-005 Complete a login using the keyboard alone | State Transition Testing | manual | none | see the results copy |
 | REQ-ACC-003 | High | derived | TC-ACC-006 Complete a transfer using the keyboard alone | State Transition Testing | manual | none | see the results copy |
 

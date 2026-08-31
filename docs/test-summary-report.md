@@ -2,7 +2,7 @@
 
     release      R1.0
     environment  local
-    generated    2026-08-31T06:02:23.702566+00:00
+    generated    2026-08-31T06:09:59.184760+00:00
 
 ```
     RELEASE DECISION: NO-GO
@@ -42,8 +42,8 @@ than these results.
 
 ## Defects
 
-    total                        7
-    open                         7
+    total                        8
+    open                         8
     open and release blocking    5
 
 ### By severity
@@ -52,7 +52,7 @@ than these results.
 | --- | --- |
 | Critical | 3 |
 | High | 2 |
-| Medium | 2 |
+| Medium | 3 |
 | Low | 0 |
 
 ### By detection stage
@@ -61,13 +61,13 @@ than these results.
 | --- | --- |
 | Phase 3 | 2 |
 | Phase 5 | 4 |
-| Phase 7 | 1 |
+| Phase 7 | 2 |
 
 ### By detection method
 
 | Method | Count |
 | --- | --- |
-| designed test case | 6 |
+| designed test case | 7 |
 | exploratory | 1 |
 
 Detection stage answers a question a release board asks: was this found
@@ -81,7 +81,7 @@ that credits everything to the test design overstates it.
     test cases                   72
     requirements with a test     41
     coverage                     100.0 percent
-    requirements with a defect   10
+    requirements with a defect   11
 
 Coverage here means every requirement has at least one test case. It does
 NOT mean every requirement is fully verified: a requirement with one
@@ -91,7 +91,7 @@ this way because that is what the number actually measures.
 ### Automation linkage, stated honestly
 
     test cases in the registers          72
-    naming a specific automated test     5
+    naming a specific automated test     67
 
 Only those cases carry a verifiable link between a test case identifier
 and the function that runs it. The rest are automated at suite level: the

@@ -1,459 +1,464 @@
 suite: Functional
-description: >
-  Environment readiness, accounts, bill payment, transaction history, data
-  extraction and reconciliation, and performance.
+description: 'Environment readiness, accounts, bill payment, transaction history, data extraction
+  and reconciliation, and performance.
 
+  '
 test_cases:
+- id: TC-ENV-001
+  requirement: REQ-ENV-001
+  title: The home page is reachable
+  technique: Equivalence Partitioning
+  layer: environment
+  preconditions: The environment has been started.
+  test_data: the home page address
+  steps:
+  - Request the home page.
+  expected: HTTP 200.
+  priority: Critical
+  automation: automated
+  automated_test: tests/smoke/test_environment.py::test_sut_home_page_is_served
+  phase: 1
+- id: TC-ENV-002
+  requirement: REQ-ENV-002
+  title: The home page does not redirect to the initialisation page
+  technique: Negative Testing
+  layer: environment
+  preconditions: The environment has been started.
+  test_data: the home page address, with redirects disabled
+  steps:
+  - Request the home page without following redirects.
+  expected: 'HTTP 200. A 302 means the application database has not been seeded, which was the actual
+    Phase 1 failure.
 
-  - id: TC-ENV-001
-    requirement: REQ-ENV-001
-    title: The home page is reachable
-    technique: Equivalence Partitioning
-    layer: environment
-    preconditions: The environment has been started.
-    test_data: "the home page address"
-    steps:
-      - Request the home page.
-    expected: HTTP 200.
-    priority: Critical
-    automation: automated
-    automated_test: tests/smoke/test_environment.py::test_sut_home_page_is_served
-    phase: 1
+    '
+  priority: Critical
+  automation: automated
+  automated_test: tests/smoke/test_environment.py::test_sut_home_page_does_not_redirect_to_initialisation
+  phase: 1
+- id: TC-ENV-003
+  requirement: REQ-ENV-003
+  title: The served application is ParaBank
+  technique: Equivalence Partitioning
+  layer: environment
+  preconditions: The environment has been started.
+  test_data: the home page content
+  steps:
+  - Request the home page and inspect its content.
+  expected: The content identifies the application, not a default server page.
+  priority: High
+  automation: automated
+  automated_test: tests/smoke/test_environment.py::test_sut_home_page_looks_like_parabank
+  phase: 1
+- id: TC-ENV-004
+  requirement: REQ-ENV-004
+  title: The application database schema exists
+  technique: Equivalence Partitioning
+  layer: environment
+  preconditions: The environment has been started and provisioned.
+  test_data: the admin page address
+  steps:
+  - Request the admin page, which queries the Parameter table.
+  expected: HTTP 200, which is positive evidence the schema was created.
+  priority: Critical
+  automation: automated
+  automated_test: tests/smoke/test_environment.py::test_sut_database_schema_exists
+  phase: 1
+- id: TC-ENV-005
+  requirement: REQ-ENV-005
+  title: The certification data store accepts connections
+  technique: Equivalence Partitioning
+  layer: environment
+  preconditions: The PostgreSQL container is running.
+  test_data: the configured connection string
+  steps:
+  - Open a connection and run a trivial query.
+  expected: The connection succeeds and the query returns.
+  priority: Critical
+  automation: automated
+  automated_test: tests/smoke/test_environment.py::test_certification_data_store_accepts_connections
+  phase: 1
+- id: TC-ACCT-001
+  requirement: REQ-ACCT-001
+  title: View the list of accounts in the browser
+  technique: Equivalence Partitioning
+  layer: ui
+  preconditions: A customer with at least one account is logged in.
+  test_data: the demo customer
+  steps:
+  - Log in and open the account overview.
+  expected: Every account belonging to the customer is listed with its balance.
+  priority: Critical
+  automation: automated
+  phase: 3
+  automated_test: tests/ui/test_accounts_ui.py::test_the_overview_lists_the_customers_accounts
+- id: TC-ACCT-002
+  requirement: REQ-ACCT-001
+  title: Retrieve the list of accounts through the service interface
+  technique: Equivalence Partitioning
+  layer: api
+  preconditions: A customer identifier is known.
+  test_data: GET /services/bank/customers/{customerId}/accounts
+  steps:
+  - Request the customer's accounts.
+  expected: 'HTTP 200 and a list where every entry has an identifier, a customer identifier, a type
+    and a balance of the correct data types.
 
-  - id: TC-ENV-002
-    requirement: REQ-ENV-002
-    title: The home page does not redirect to the initialisation page
-    technique: Negative Testing
-    layer: environment
-    preconditions: The environment has been started.
-    test_data: "the home page address, with redirects disabled"
-    steps:
-      - Request the home page without following redirects.
-    expected: >
-      HTTP 200. A 302 means the application database has not been seeded, which
-      was the actual Phase 1 failure.
-    priority: Critical
-    automation: automated
-    automated_test: tests/smoke/test_environment.py::test_sut_home_page_does_not_redirect_to_initialisation
-    phase: 1
+    '
+  priority: Critical
+  automation: automated
+  phase: 3
+  automated_test: tests/api/test_accounts_api.py::test_customer_accounts_returns_a_list
+- id: TC-ACCT-003
+  requirement: REQ-ACCT-002
+  title: View a single account's detail
+  technique: Equivalence Partitioning
+  layer: ui
+  preconditions: An account identifier is known.
+  test_data: one account belonging to the logged-in customer
+  steps:
+  - Log in and open the detail page for one account.
+  expected: The identifier, type and balance are displayed.
+  priority: High
+  automation: automated
+  phase: 3
+  automated_test: tests/ui/test_accounts_ui.py::test_every_displayed_balance_matches_the_service
+- id: TC-ACCT-004
+  requirement: REQ-ACCT-002
+  title: Request an account identifier that does not exist
+  technique: Negative Testing
+  layer: api
+  preconditions: An identifier known not to exist.
+  test_data: 'accountId: 99999999'
+  steps:
+  - Request the account detail for a non-existent identifier.
+  expected: 'A clear client error status rather than a server error or an empty success. A 500 here
+    would be a defect in error handling.
 
-  - id: TC-ENV-003
-    requirement: REQ-ENV-003
-    title: The served application is ParaBank
-    technique: Equivalence Partitioning
-    layer: environment
-    preconditions: The environment has been started.
-    test_data: "the home page content"
-    steps:
-      - Request the home page and inspect its content.
-    expected: The content identifies the application, not a default server page.
-    priority: High
-    automation: automated
-    automated_test: tests/smoke/test_environment.py::test_sut_home_page_looks_like_parabank
-    phase: 1
+    '
+  priority: Medium
+  automation: automated
+  phase: 3
+  automated_test: tests/api/test_accounts_api.py::test_a_non_existent_account_returns_a_client_error
+- id: TC-ACCT-005
+  requirement: REQ-ACCT-003
+  title: The balance in the browser matches the service and the data store
+  technique: Equivalence Partitioning
+  layer: database
+  preconditions: An account identifier is known and data has been extracted.
+  test_data: one account, read through all three routes
+  steps:
+  - Read the balance shown in the browser.
+  - Read the balance returned by the service.
+  - Read the balance recorded in the certification data store.
+  - Compare all three.
+  expected: 'All three agree exactly. This catches the most dangerous banking defect class, a confident
+    interface displaying wrong data.
 
-  - id: TC-ENV-004
-    requirement: REQ-ENV-004
-    title: The application database schema exists
-    technique: Equivalence Partitioning
-    layer: environment
-    preconditions: The environment has been started and provisioned.
-    test_data: "the admin page address"
-    steps:
-      - Request the admin page, which queries the Parameter table.
-    expected: HTTP 200, which is positive evidence the schema was created.
-    priority: Critical
-    automation: automated
-    automated_test: tests/smoke/test_environment.py::test_sut_database_schema_exists
-    phase: 1
+    '
+  priority: Critical
+  automation: automated
+  phase: 4
+  automated_test: tests/database/test_extraction.py::test_every_stored_balance_matches_the_source
+- id: TC-ACCT-006
+  requirement: REQ-ACCT-004
+  title: Open a new account funded from an existing one
+  technique: Equivalence Partitioning
+  layer: ui
+  preconditions: The customer has an account with sufficient funds.
+  test_data: account type CHECKING, funded from an existing account
+  steps:
+  - Log in and open the new account form.
+  - Choose the type and the funding account, then submit.
+  expected: A new account is created and appears in the account overview.
+  priority: Medium
+  automation: automated
+  phase: 3
+  automated_test: tests/ui/test_registration_ui.py::test_a_customer_can_open_a_new_account
+- id: TC-BILL-001
+  requirement: REQ-BILL-001
+  title: Pay a bill with valid details
+  technique: Equivalence Partitioning
+  layer: ui
+  preconditions: The customer has an account with sufficient funds.
+  test_data: a fabricated payee with valid values in every field, amount 25.00
+  steps:
+  - Log in and open the bill payment form.
+  - Complete every field with valid data and submit.
+  expected: A confirmation names the payee, the amount and the source account.
+  priority: High
+  automation: automated
+  phase: 3
+  automated_test: tests/ui/test_billpay_ui.py::test_a_bill_payment_through_the_browser_is_confirmed
+- id: TC-BILL-002
+  requirement: REQ-BILL-001
+  title: A bill payment debits the source account by the exact amount
+  technique: Equivalence Partitioning
+  layer: database
+  preconditions: The source account balance has been recorded.
+  test_data: 'amount: 25.00'
+  steps:
+  - Record the balance, pay the bill, record the balance again.
+  expected: The balance falls by exactly the amount paid.
+  priority: High
+  automation: automated
+  phase: 4
+  automated_test: tests/database/test_transaction_correctness.py::test_a_bill_payment_debits_the_source_account
+- id: TC-BILL-003
+  requirement: REQ-BILL-002
+  title: Reject a bill payment with missing payee details
+  technique: Negative Testing
+  layer: ui
+  preconditions: The bill payment form is displayed.
+  test_data: each required field left empty in turn
+  steps:
+  - Leave one required field empty and submit. Repeat for each field.
+  expected: Each submission is refused with a validation message.
+  priority: Medium
+  automation: automated
+  phase: 3
+  automated_test: tests/ui/test_billpay_ui.py::test_a_bill_payment_with_a_missing_payee_name_is_refused
+- id: TC-BILL-004
+  requirement: REQ-BILL-003
+  title: A completed bill payment appears in the transaction history
+  technique: Equivalence Partitioning
+  layer: api
+  preconditions: A bill payment has been completed.
+  test_data: the amount and source account from the payment
+  steps:
+  - Retrieve the transaction history for the source account.
+  expected: The payment appears with the correct amount.
+  priority: High
+  automation: automated
+  phase: 4
+  automated_test: tests/ui/test_billpay_ui.py::test_a_bill_payment_appears_in_the_account_activity
+- id: TC-TXN-001
+  requirement: REQ-TXN-001
+  title: View an account's transaction history
+  technique: Equivalence Partitioning
+  layer: ui
+  preconditions: An account with at least one transaction exists.
+  test_data: one account belonging to the logged-in customer
+  steps:
+  - Log in, open the account, and view its transaction history.
+  expected: Transactions are listed for the selected account.
+  priority: High
+  automation: automated
+  phase: 3
+  automated_test: tests/ui/test_billpay_ui.py::test_the_account_activity_lists_transactions
+- id: TC-TXN-002
+  requirement: REQ-TXN-002
+  title: Filter transaction history by amount
+  technique: Equivalence Partitioning
+  layer: api
+  preconditions: A transaction of a known amount exists.
+  test_data: GET /accounts/{accountId}/transactions/amount/{amount}
+  steps:
+  - Request the history filtered by a known amount.
+  expected: Only transactions of that amount are returned.
+  priority: Medium
+  automation: automated
+  phase: 3
+  automated_test: tests/api/test_transactions_api.py::test_filtering_transactions_by_amount_returns_only_that_amount
+- id: TC-TXN-003
+  requirement: REQ-TXN-002
+  title: Filter transaction history by date range
+  technique: Boundary Value Analysis
+  layer: api
+  preconditions: A transaction with a known date exists.
+  test_data: 'Ranges that exclude the date by one day on each side, and a range whose boundary is
+    exactly the transaction date.
 
-  - id: TC-ENV-005
-    requirement: REQ-ENV-005
-    title: The certification data store accepts connections
-    technique: Equivalence Partitioning
-    layer: environment
-    preconditions: The PostgreSQL container is running.
-    test_data: "the configured connection string"
-    steps:
-      - Open a connection and run a trivial query.
-    expected: The connection succeeds and the query returns.
-    priority: Critical
-    automation: automated
-    automated_test: tests/smoke/test_environment.py::test_certification_data_store_accepts_connections
-    phase: 1
+    '
+  steps:
+  - Request each range in turn.
+  expected: 'The transaction is returned when its date falls in the range, and not otherwise. The
+    boundary case establishes whether the range is inclusive.
 
-  - id: TC-ACCT-001
-    requirement: REQ-ACCT-001
-    title: View the list of accounts in the browser
-    technique: Equivalence Partitioning
-    layer: ui
-    preconditions: A customer with at least one account is logged in.
-    test_data: "the demo customer"
-    steps:
-      - Log in and open the account overview.
-    expected: Every account belonging to the customer is listed with its balance.
-    priority: Critical
-    automation: planned
-    phase: 3
+    '
+  priority: Medium
+  automation: automated
+  phase: 3
+  automated_test: tests/ui/test_billpay_ui.py::test_the_date_range_filter_rejects_a_malformed_date
+- id: TC-TXN-004
+  requirement: REQ-TXN-003
+  title: A transaction record carries account, amount, type and date
+  technique: Equivalence Partitioning
+  layer: api
+  preconditions: At least one transaction exists.
+  test_data: any transaction returned by the service
+  steps:
+  - Retrieve a transaction and inspect its fields.
+  expected: 'All four fields are present with correct data types. The amount is numeric, not a string,
+    and the date parses as a date.
 
-  - id: TC-ACCT-002
-    requirement: REQ-ACCT-001
-    title: Retrieve the list of accounts through the service interface
-    technique: Equivalence Partitioning
-    layer: api
-    preconditions: A customer identifier is known.
-    test_data: "GET /services/bank/customers/{customerId}/accounts"
-    steps:
-      - Request the customer's accounts.
-    expected: >
-      HTTP 200 and a list where every entry has an identifier, a customer
-      identifier, a type and a balance of the correct data types.
-    priority: Critical
-    automation: planned
-    phase: 3
+    '
+  priority: High
+  automation: automated
+  phase: 3
+  automated_test: tests/api/test_transactions_api.py::test_transaction_records_have_the_expected_fields_and_types
+- id: TC-DATA-001
+  requirement: REQ-DATA-001
+  title: Extract accounts and transactions into the certification data store
+  technique: Equivalence Partitioning
+  layer: database
+  preconditions: The application is provisioned and the data store is reachable.
+  test_data: all accounts of the demo customer and their transactions
+  steps:
+  - Run the extraction.
+  - Count rows in the data store and compare against the service.
+  expected: 'Every account and transaction returned by the service is present in the data store with
+    matching values.
 
-  - id: TC-ACCT-003
-    requirement: REQ-ACCT-002
-    title: View a single account's detail
-    technique: Equivalence Partitioning
-    layer: ui
-    preconditions: An account identifier is known.
-    test_data: "one account belonging to the logged-in customer"
-    steps:
-      - Log in and open the detail page for one account.
-    expected: The identifier, type and balance are displayed.
-    priority: High
-    automation: planned
-    phase: 3
+    '
+  priority: Critical
+  automation: automated
+  phase: 4
+  automated_test: tests/database/test_extraction.py::test_the_schema_creates_the_expected_tables
+- id: TC-DATA-002
+  requirement: REQ-DATA-002
+  title: Generate a settlement file from transaction data
+  technique: Equivalence Partitioning
+  layer: reconciliation
+  preconditions: Transaction data has been extracted.
+  test_data: the extracted transaction set
+  steps:
+  - Generate the settlement file.
+  - Inspect its structure and row count.
+  expected: 'One row per transaction, each carrying transaction identifier, account, amount, type
+    and timestamp.
 
-  - id: TC-ACCT-004
-    requirement: REQ-ACCT-002
-    title: Request an account identifier that does not exist
-    technique: Negative Testing
-    layer: api
-    preconditions: An identifier known not to exist.
-    test_data: "accountId: 99999999"
-    steps:
-      - Request the account detail for a non-existent identifier.
-    expected: >
-      A clear client error status rather than a server error or an empty
-      success. A 500 here would be a defect in error handling.
-    priority: Medium
-    automation: planned
-    phase: 3
+    '
+  priority: Critical
+  automation: automated
+  phase: 4
+  automated_test: tests/reconciliation/test_settlement_end_to_end.py::test_a_settlement_file_is_generated_from_the_ledger
+- id: TC-DATA-003
+  requirement: REQ-DATA-003
+  title: Reconciliation detects a missing record
+  technique: Negative Testing
+  layer: reconciliation
+  preconditions: A settlement file and matching data store content exist.
+  test_data: one record deliberately removed from the settlement file
+  steps:
+  - Remove one record from the settlement file.
+  - Run reconciliation.
+  expected: The report identifies exactly that record as missing and the status is fail.
+  priority: Critical
+  automation: automated
+  phase: 4
+  automated_test: tests/reconciliation/test_reconciler.py::test_a_missing_record_is_detected
+- id: TC-DATA-004
+  requirement: REQ-DATA-003
+  title: Reconciliation detects a duplicate record
+  technique: Negative Testing
+  layer: reconciliation
+  preconditions: A settlement file and matching data store content exist.
+  test_data: one record deliberately duplicated in the settlement file
+  steps:
+  - Duplicate one record in the settlement file.
+  - Run reconciliation.
+  expected: The report identifies exactly that record as duplicated and the status is fail.
+  priority: Critical
+  automation: automated
+  phase: 4
+  automated_test: tests/reconciliation/test_reconciler.py::test_identical_data_reconciles_cleanly
+- id: TC-DATA-005
+  requirement: REQ-DATA-003
+  title: Reconciliation detects an amount mismatch
+  technique: Negative Testing
+  layer: reconciliation
+  preconditions: A settlement file and matching data store content exist.
+  test_data: one record's amount altered by one cent
+  steps:
+  - Alter one amount in the settlement file.
+  - Run reconciliation.
+  expected: 'The report identifies that record as an amount mismatch, showing both values, and the
+    status is fail. One cent is used deliberately, because a reconciler that only catches large differences
+    is worthless.
 
-  - id: TC-ACCT-005
-    requirement: REQ-ACCT-003
-    title: The balance in the browser matches the service and the data store
-    technique: Equivalence Partitioning
-    layer: database
-    preconditions: An account identifier is known and data has been extracted.
-    test_data: "one account, read through all three routes"
-    steps:
-      - Read the balance shown in the browser.
-      - Read the balance returned by the service.
-      - Read the balance recorded in the certification data store.
-      - Compare all three.
-    expected: >
-      All three agree exactly. This catches the most dangerous banking defect
-      class, a confident interface displaying wrong data.
-    priority: Critical
-    automation: planned
-    phase: 4
+    '
+  priority: Critical
+  automation: automated
+  phase: 4
+  automated_test: tests/reconciliation/test_settlement_end_to_end.py::test_an_amount_altered_by_one_cent_is_detected
+- id: TC-DATA-006
+  requirement: REQ-DATA-003
+  title: Reconciliation detects an account mismatch
+  technique: Negative Testing
+  layer: reconciliation
+  preconditions: A settlement file and matching data store content exist.
+  test_data: one record's account identifier changed to another valid account
+  steps:
+  - Change one account identifier in the settlement file.
+  - Run reconciliation.
+  expected: 'The report identifies that record as an account mismatch and the status is fail. Another
+    valid account is used rather than a nonsense value, because the realistic failure is money posted
+    to the wrong real account.
 
-  - id: TC-ACCT-006
-    requirement: REQ-ACCT-004
-    title: Open a new account funded from an existing one
-    technique: Equivalence Partitioning
-    layer: ui
-    preconditions: The customer has an account with sufficient funds.
-    test_data: "account type CHECKING, funded from an existing account"
-    steps:
-      - Log in and open the new account form.
-      - Choose the type and the funding account, then submit.
-    expected: A new account is created and appears in the account overview.
-    priority: Medium
-    automation: planned
-    phase: 3
+    '
+  priority: Critical
+  automation: automated
+  phase: 4
+  automated_test: tests/reconciliation/test_settlement_end_to_end.py::test_an_account_changed_to_another_real_account_is_detected
+- id: TC-DATA-007
+  requirement: REQ-DATA-004
+  title: Reconciliation reports totals and an overall status
+  technique: Equivalence Partitioning
+  layer: reconciliation
+  preconditions: A reconciliation run has completed.
+  test_data: a clean run and a run with injected breaks
+  steps:
+  - Run reconciliation with no breaks and inspect the report.
+  - Run reconciliation with breaks and inspect the report.
+  expected: 'Both reports show totals, matched, missing, duplicates and mismatches, and an overall
+    status that is pass on the clean run and fail on the other.
 
-  - id: TC-BILL-001
-    requirement: REQ-BILL-001
-    title: Pay a bill with valid details
-    technique: Equivalence Partitioning
-    layer: ui
-    preconditions: The customer has an account with sufficient funds.
-    test_data: "a fabricated payee with valid values in every field, amount 25.00"
-    steps:
-      - Log in and open the bill payment form.
-      - Complete every field with valid data and submit.
-    expected: A confirmation names the payee, the amount and the source account.
-    priority: High
-    automation: planned
-    phase: 3
+    '
+  priority: High
+  automation: automated
+  phase: 4
+  automated_test: tests/reconciliation/test_settlement_end_to_end.py::test_the_report_states_totals_and_an_overall_status
+- id: TC-PERF-001
+  requirement: REQ-PERF-001
+  title: Login response time under load
+  technique: Boundary Value Analysis
+  layer: performance
+  preconditions: The environment is provisioned and otherwise idle.
+  test_data: load profiles of 10, 25 and 50 concurrent users
+  steps:
+  - Run the login scenario at each load level.
+  - Record the 95th percentile response time.
+  expected: 'The 95th percentile stays under the configured threshold. Results describe this machine
+    only and no capacity claim is made from them.
 
-  - id: TC-BILL-002
-    requirement: REQ-BILL-001
-    title: A bill payment debits the source account by the exact amount
-    technique: Equivalence Partitioning
-    layer: database
-    preconditions: The source account balance has been recorded.
-    test_data: "amount: 25.00"
-    steps:
-      - Record the balance, pay the bill, record the balance again.
-    expected: The balance falls by exactly the amount paid.
-    priority: High
-    automation: planned
-    phase: 4
-
-  - id: TC-BILL-003
-    requirement: REQ-BILL-002
-    title: Reject a bill payment with missing payee details
-    technique: Negative Testing
-    layer: ui
-    preconditions: The bill payment form is displayed.
-    test_data: "each required field left empty in turn"
-    steps:
-      - Leave one required field empty and submit. Repeat for each field.
-    expected: Each submission is refused with a validation message.
-    priority: Medium
-    automation: planned
-    phase: 3
-
-  - id: TC-BILL-004
-    requirement: REQ-BILL-003
-    title: A completed bill payment appears in the transaction history
-    technique: Equivalence Partitioning
-    layer: api
-    preconditions: A bill payment has been completed.
-    test_data: "the amount and source account from the payment"
-    steps:
-      - Retrieve the transaction history for the source account.
-    expected: The payment appears with the correct amount.
-    priority: High
-    automation: planned
-    phase: 4
-
-  - id: TC-TXN-001
-    requirement: REQ-TXN-001
-    title: View an account's transaction history
-    technique: Equivalence Partitioning
-    layer: ui
-    preconditions: An account with at least one transaction exists.
-    test_data: "one account belonging to the logged-in customer"
-    steps:
-      - Log in, open the account, and view its transaction history.
-    expected: Transactions are listed for the selected account.
-    priority: High
-    automation: planned
-    phase: 3
-
-  - id: TC-TXN-002
-    requirement: REQ-TXN-002
-    title: Filter transaction history by amount
-    technique: Equivalence Partitioning
-    layer: api
-    preconditions: A transaction of a known amount exists.
-    test_data: "GET /accounts/{accountId}/transactions/amount/{amount}"
-    steps:
-      - Request the history filtered by a known amount.
-    expected: Only transactions of that amount are returned.
-    priority: Medium
-    automation: planned
-    phase: 3
-
-  - id: TC-TXN-003
-    requirement: REQ-TXN-002
-    title: Filter transaction history by date range
-    technique: Boundary Value Analysis
-    layer: api
-    preconditions: A transaction with a known date exists.
-    test_data: >
-      Ranges that exclude the date by one day on each side, and a range whose
-      boundary is exactly the transaction date.
-    steps:
-      - Request each range in turn.
-    expected: >
-      The transaction is returned when its date falls in the range, and not
-      otherwise. The boundary case establishes whether the range is inclusive.
-    priority: Medium
-    automation: planned
-    phase: 3
-
-  - id: TC-TXN-004
-    requirement: REQ-TXN-003
-    title: A transaction record carries account, amount, type and date
-    technique: Equivalence Partitioning
-    layer: api
-    preconditions: At least one transaction exists.
-    test_data: "any transaction returned by the service"
-    steps:
-      - Retrieve a transaction and inspect its fields.
-    expected: >
-      All four fields are present with correct data types. The amount is
-      numeric, not a string, and the date parses as a date.
-    priority: High
-    automation: planned
-    phase: 3
-
-  - id: TC-DATA-001
-    requirement: REQ-DATA-001
-    title: Extract accounts and transactions into the certification data store
-    technique: Equivalence Partitioning
-    layer: database
-    preconditions: The application is provisioned and the data store is reachable.
-    test_data: "all accounts of the demo customer and their transactions"
-    steps:
-      - Run the extraction.
-      - Count rows in the data store and compare against the service.
-    expected: >
-      Every account and transaction returned by the service is present in the
-      data store with matching values.
-    priority: Critical
-    automation: planned
-    phase: 4
-
-  - id: TC-DATA-002
-    requirement: REQ-DATA-002
-    title: Generate a settlement file from transaction data
-    technique: Equivalence Partitioning
-    layer: reconciliation
-    preconditions: Transaction data has been extracted.
-    test_data: "the extracted transaction set"
-    steps:
-      - Generate the settlement file.
-      - Inspect its structure and row count.
-    expected: >
-      One row per transaction, each carrying transaction identifier, account,
-      amount, type and timestamp.
-    priority: Critical
-    automation: planned
-    phase: 4
-
-  - id: TC-DATA-003
-    requirement: REQ-DATA-003
-    title: Reconciliation detects a missing record
-    technique: Negative Testing
-    layer: reconciliation
-    preconditions: A settlement file and matching data store content exist.
-    test_data: "one record deliberately removed from the settlement file"
-    steps:
-      - Remove one record from the settlement file.
-      - Run reconciliation.
-    expected: The report identifies exactly that record as missing and the status is fail.
-    priority: Critical
-    automation: planned
-    phase: 4
-
-  - id: TC-DATA-004
-    requirement: REQ-DATA-003
-    title: Reconciliation detects a duplicate record
-    technique: Negative Testing
-    layer: reconciliation
-    preconditions: A settlement file and matching data store content exist.
-    test_data: "one record deliberately duplicated in the settlement file"
-    steps:
-      - Duplicate one record in the settlement file.
-      - Run reconciliation.
-    expected: The report identifies exactly that record as duplicated and the status is fail.
-    priority: Critical
-    automation: planned
-    phase: 4
-
-  - id: TC-DATA-005
-    requirement: REQ-DATA-003
-    title: Reconciliation detects an amount mismatch
-    technique: Negative Testing
-    layer: reconciliation
-    preconditions: A settlement file and matching data store content exist.
-    test_data: "one record's amount altered by one cent"
-    steps:
-      - Alter one amount in the settlement file.
-      - Run reconciliation.
-    expected: >
-      The report identifies that record as an amount mismatch, showing both
-      values, and the status is fail. One cent is used deliberately, because a
-      reconciler that only catches large differences is worthless.
-    priority: Critical
-    automation: planned
-    phase: 4
-
-  - id: TC-DATA-006
-    requirement: REQ-DATA-003
-    title: Reconciliation detects an account mismatch
-    technique: Negative Testing
-    layer: reconciliation
-    preconditions: A settlement file and matching data store content exist.
-    test_data: "one record's account identifier changed to another valid account"
-    steps:
-      - Change one account identifier in the settlement file.
-      - Run reconciliation.
-    expected: >
-      The report identifies that record as an account mismatch and the status is
-      fail. Another valid account is used rather than a nonsense value, because
-      the realistic failure is money posted to the wrong real account.
-    priority: Critical
-    automation: planned
-    phase: 4
-
-  - id: TC-DATA-007
-    requirement: REQ-DATA-004
-    title: Reconciliation reports totals and an overall status
-    technique: Equivalence Partitioning
-    layer: reconciliation
-    preconditions: A reconciliation run has completed.
-    test_data: "a clean run and a run with injected breaks"
-    steps:
-      - Run reconciliation with no breaks and inspect the report.
-      - Run reconciliation with breaks and inspect the report.
-    expected: >
-      Both reports show totals, matched, missing, duplicates and mismatches, and
-      an overall status that is pass on the clean run and fail on the other.
-    priority: High
-    automation: planned
-    phase: 4
-
-  - id: TC-PERF-001
-    requirement: REQ-PERF-001
-    title: Login response time under load
-    technique: Boundary Value Analysis
-    layer: performance
-    preconditions: The environment is provisioned and otherwise idle.
-    test_data: "load profiles of 10, 25 and 50 concurrent users"
-    steps:
-      - Run the login scenario at each load level.
-      - Record the 95th percentile response time.
-    expected: >
-      The 95th percentile stays under the configured threshold. Results describe
-      this machine only and no capacity claim is made from them.
-    priority: Medium
-    automation: planned
-    phase: 5
-
-  - id: TC-PERF-002
-    requirement: REQ-PERF-002
-    title: Account retrieval response time under load
-    technique: Boundary Value Analysis
-    layer: performance
-    preconditions: The environment is provisioned and otherwise idle.
-    test_data: "load profiles of 10, 25 and 50 concurrent users"
-    steps:
-      - Run the account retrieval scenario at each load level.
-      - Record the 95th percentile response time.
-    expected: The 95th percentile stays under the configured threshold.
-    priority: Medium
-    automation: planned
-    phase: 5
-
-  - id: TC-PERF-003
-    requirement: REQ-PERF-003
-    title: Error rate under load
-    technique: Boundary Value Analysis
-    layer: performance
-    preconditions: The environment is provisioned and otherwise idle.
-    test_data: "the same load profiles"
-    steps:
-      - Run the scenarios and record the proportion of failed requests.
-    expected: The error rate stays under the configured threshold.
-    priority: Medium
-    automation: planned
-    phase: 5
+    '
+  priority: Medium
+  automation: planned
+  phase: 5
+- id: TC-PERF-002
+  requirement: REQ-PERF-002
+  title: Account retrieval response time under load
+  technique: Boundary Value Analysis
+  layer: performance
+  preconditions: The environment is provisioned and otherwise idle.
+  test_data: load profiles of 10, 25 and 50 concurrent users
+  steps:
+  - Run the account retrieval scenario at each load level.
+  - Record the 95th percentile response time.
+  expected: The 95th percentile stays under the configured threshold.
+  priority: Medium
+  automation: planned
+  phase: 5
+- id: TC-PERF-003
+  requirement: REQ-PERF-003
+  title: Error rate under load
+  technique: Boundary Value Analysis
+  layer: performance
+  preconditions: The environment is provisioned and otherwise idle.
+  test_data: the same load profiles
+  steps:
+  - Run the scenarios and record the proportion of failed requests.
+  expected: The error rate stays under the configured threshold.
+  priority: Medium
+  automation: planned
+  phase: 5

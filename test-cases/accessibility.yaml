@@ -1,122 +1,122 @@
 suite: Accessibility
-description: >
-  WCAG 2.1 level AA. Automated scanning finds roughly a third of real barriers,
-  so every automated case is paired with a manual one.
+description: 'WCAG 2.1 level AA. Automated scanning finds roughly a third of real barriers, so every
+  automated case is paired with a manual one.
 
+  '
 test_cases:
+- id: TC-ACC-001
+  requirement: REQ-ACC-001
+  title: Automated scan of the login page
+  technique: Equivalence Partitioning
+  layer: accessibility
+  preconditions: The login page is displayed.
+  test_data: axe-core, WCAG 2.1 level AA rule set
+  steps:
+  - Load the login page and run the automated scan.
+  - Record every violation with its rule, impact, element and success criterion.
+  expected: No violations of critical or serious impact.
+  priority: High
+  automation: automated
+  phase: 5
+  automated_test: tests/accessibility/test_axe_scans.py::test_key_pages_have_no_critical_or_serious_violations
+- id: TC-ACC-002
+  requirement: REQ-ACC-001
+  title: Automated scan of the account overview page
+  technique: Equivalence Partitioning
+  layer: accessibility
+  preconditions: A customer is logged in.
+  test_data: axe-core, WCAG 2.1 level AA rule set
+  steps:
+  - Load the account overview and run the automated scan.
+  - Record every violation.
+  expected: No violations of critical or serious impact.
+  priority: High
+  automation: automated
+  phase: 5
+  automated_test: tests/accessibility/test_axe_scans.py::test_key_pages_have_no_critical_or_serious_violations
+- id: TC-ACC-003
+  requirement: REQ-ACC-001
+  title: Automated scan of the transfer page
+  technique: Equivalence Partitioning
+  layer: accessibility
+  preconditions: A customer is logged in.
+  test_data: axe-core, WCAG 2.1 level AA rule set
+  steps:
+  - Load the transfer page and run the automated scan.
+  - Record every violation.
+  expected: No violations of critical or serious impact.
+  priority: High
+  automation: automated
+  phase: 5
+  automated_test: tests/accessibility/test_axe_scans.py::test_key_pages_have_no_critical_or_serious_violations
+- id: TC-ACC-004
+  requirement: REQ-ACC-002
+  title: Every form input has an associated label
+  technique: Equivalence Partitioning
+  layer: accessibility
+  preconditions: The login, transfer and bill payment forms are reachable.
+  test_data: every input on each form
+  steps:
+  - For each form, check that every input has a programmatically associated label.
+  expected: 'Every input has a label a screen reader can announce. A visible caption that is not
+    associated in the markup does not count, because assistive technology reads the association,
+    not the layout.
 
-  - id: TC-ACC-001
-    requirement: REQ-ACC-001
-    title: Automated scan of the login page
-    technique: Equivalence Partitioning
-    layer: accessibility
-    preconditions: The login page is displayed.
-    test_data: "axe-core, WCAG 2.1 level AA rule set"
-    steps:
-      - Load the login page and run the automated scan.
-      - Record every violation with its rule, impact, element and success criterion.
-    expected: No violations of critical or serious impact.
-    priority: High
-    automation: planned
-    phase: 5
+    '
+  priority: High
+  automation: automated
+  phase: 5
+  automated_test: tests/accessibility/test_axe_scans.py::test_every_form_input_has_an_accessible_name
+- id: TC-ACC-005
+  requirement: REQ-ACC-003
+  title: Complete a login using the keyboard alone
+  technique: State Transition Testing
+  layer: accessibility
+  preconditions: The login page is displayed and no pointing device is used.
+  test_data: valid credentials, keyboard only
+  steps:
+  - Reach the username field using the tab key alone.
+  - Enter credentials and submit without using a mouse.
+  - Observe the focus indicator at every step.
+  expected: 'Login completes, tab order follows the visual order, and focus is visibly indicated
+    throughout. Verified manually, because automated tooling cannot confirm that a focus indicator
+    is actually perceivable.
 
-  - id: TC-ACC-002
-    requirement: REQ-ACC-001
-    title: Automated scan of the account overview page
-    technique: Equivalence Partitioning
-    layer: accessibility
-    preconditions: A customer is logged in.
-    test_data: "axe-core, WCAG 2.1 level AA rule set"
-    steps:
-      - Load the account overview and run the automated scan.
-      - Record every violation.
-    expected: No violations of critical or serious impact.
-    priority: High
-    automation: planned
-    phase: 5
+    '
+  priority: High
+  automation: manual
+  phase: 5
+- id: TC-ACC-006
+  requirement: REQ-ACC-003
+  title: Complete a transfer using the keyboard alone
+  technique: State Transition Testing
+  layer: accessibility
+  preconditions: A customer is logged in and no pointing device is used.
+  test_data: a valid transfer, keyboard only
+  steps:
+  - Navigate to the transfer page by keyboard.
+  - Complete every field and submit by keyboard.
+  - Confirm the result is announced or reachable by keyboard.
+  expected: The transfer completes and its confirmation is reachable without a pointing device.
+  priority: High
+  automation: manual
+  phase: 5
+- id: TC-ACC-007
+  requirement: REQ-ACC-002
+  title: Validation errors are announced, not only shown in colour
+  technique: Negative Testing
+  layer: accessibility
+  preconditions: The transfer form is displayed.
+  test_data: an invalid amount that triggers a validation error
+  steps:
+  - Submit an invalid amount.
+  - Check that the error is associated with the field in the markup.
+  - Check that the error is conveyed by more than colour alone.
+  expected: 'The error is programmatically associated with the field and is conveyed by text as well
+    as colour. Colour alone excludes colour-blind users and screen reader users at the same time.
 
-  - id: TC-ACC-003
-    requirement: REQ-ACC-001
-    title: Automated scan of the transfer page
-    technique: Equivalence Partitioning
-    layer: accessibility
-    preconditions: A customer is logged in.
-    test_data: "axe-core, WCAG 2.1 level AA rule set"
-    steps:
-      - Load the transfer page and run the automated scan.
-      - Record every violation.
-    expected: No violations of critical or serious impact.
-    priority: High
-    automation: planned
-    phase: 5
-
-  - id: TC-ACC-004
-    requirement: REQ-ACC-002
-    title: Every form input has an associated label
-    technique: Equivalence Partitioning
-    layer: accessibility
-    preconditions: The login, transfer and bill payment forms are reachable.
-    test_data: "every input on each form"
-    steps:
-      - For each form, check that every input has a programmatically associated label.
-    expected: >
-      Every input has a label a screen reader can announce. A visible caption
-      that is not associated in the markup does not count, because assistive
-      technology reads the association, not the layout.
-    priority: High
-    automation: planned
-    phase: 5
-
-  - id: TC-ACC-005
-    requirement: REQ-ACC-003
-    title: Complete a login using the keyboard alone
-    technique: State Transition Testing
-    layer: accessibility
-    preconditions: The login page is displayed and no pointing device is used.
-    test_data: "valid credentials, keyboard only"
-    steps:
-      - Reach the username field using the tab key alone.
-      - Enter credentials and submit without using a mouse.
-      - Observe the focus indicator at every step.
-    expected: >
-      Login completes, tab order follows the visual order, and focus is visibly
-      indicated throughout. Verified manually, because automated tooling cannot
-      confirm that a focus indicator is actually perceivable.
-    priority: High
-    automation: manual
-    phase: 5
-
-  - id: TC-ACC-006
-    requirement: REQ-ACC-003
-    title: Complete a transfer using the keyboard alone
-    technique: State Transition Testing
-    layer: accessibility
-    preconditions: A customer is logged in and no pointing device is used.
-    test_data: "a valid transfer, keyboard only"
-    steps:
-      - Navigate to the transfer page by keyboard.
-      - Complete every field and submit by keyboard.
-      - Confirm the result is announced or reachable by keyboard.
-    expected: The transfer completes and its confirmation is reachable without a pointing device.
-    priority: High
-    automation: manual
-    phase: 5
-
-  - id: TC-ACC-007
-    requirement: REQ-ACC-002
-    title: Validation errors are announced, not only shown in colour
-    technique: Negative Testing
-    layer: accessibility
-    preconditions: The transfer form is displayed.
-    test_data: "an invalid amount that triggers a validation error"
-    steps:
-      - Submit an invalid amount.
-      - Check that the error is associated with the field in the markup.
-      - Check that the error is conveyed by more than colour alone.
-    expected: >
-      The error is programmatically associated with the field and is conveyed by
-      text as well as colour. Colour alone excludes colour-blind users and
-      screen reader users at the same time.
-    priority: High
-    automation: planned
-    phase: 5
+    '
+  priority: High
+  automation: automated
+  phase: 5
+  automated_test: tests/accessibility/test_axe_scans.py::test_a_validation_error_is_conveyed_by_more_than_colour

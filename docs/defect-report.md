@@ -19,8 +19,8 @@ reopen rate, no time to fix and no fix effectiveness.
 
 ## Release impact
 
-    total defects                7
-    open                         7
+    total defects                8
+    open                         8
     open and release blocking    5
 
 GATE-CRITICAL-DEFECT fails a release on any open defect of severity
@@ -41,6 +41,7 @@ regressions, and marking a test does not remove its defect from the gate.
 | [DEF-005](../defects/DEF-005.md) | The REST services require no authentication | Critical | P1 | Open | REQ-SEC-001, REQ-SEC-002 | Phase 5 |
 | [DEF-006](../defects/DEF-006.md) | Credentials are carried in the URL path | High | P2 | Open | REQ-SEC-003 | Phase 5 |
 | [DEF-007](../defects/DEF-007.md) | A transfer with sub-cent precision makes accounts permanently unreadable | Critical | P1 | Open | REQ-XFER-004, REQ-ACCT-001, REQ-ACCT-002 | Phase 7 |
+| [DEF-008](../defects/DEF-008.md) | The transaction date range search accepts an invalid date | Medium | P3 | Open | REQ-TXN-002 | Phase 7 |
 
 ### By severity
 
@@ -48,7 +49,7 @@ regressions, and marking a test does not remove its defect from the gate.
 | --- | --- |
 | Critical | 3 |
 | High | 2 |
-| Medium | 2 |
+| Medium | 3 |
 | Low | 0 |
 
 ### By priority
@@ -57,14 +58,14 @@ regressions, and marking a test does not remove its defect from the gate.
 | --- | --- |
 | P1 | 3 |
 | P2 | 2 |
-| P3 | 2 |
+| P3 | 3 |
 | P4 | 0 |
 
 ### By status
 
 | | Count |
 | --- | --- |
-| Open | 7 |
+| Open | 8 |
 
 ### By detection layer
 
@@ -73,6 +74,7 @@ regressions, and marking a test does not remove its defect from the gate.
 | accessibility | 2 |
 | api | 3 |
 | security | 2 |
+| ui | 1 |
 
 ### By requirement area
 
@@ -81,7 +83,7 @@ regressions, and marking a test does not remove its defect from the gate.
 | ACC | 2 |
 | ACCT | 2 |
 | SEC | 3 |
-| TXN | 1 |
+| TXN | 2 |
 | XFER | 2 |
 
 ### By phase in which it was detected
@@ -90,13 +92,13 @@ regressions, and marking a test does not remove its defect from the gate.
 | --- | --- |
 | Phase 3 | 2 |
 | Phase 5 | 4 |
-| Phase 7 | 1 |
+| Phase 7 | 2 |
 
 ### By detection method
 
 | Method | Count |
 | --- | --- |
-| designed test case | 6 |
+| designed test case | 7 |
 | exploratory | 1 |
 
 Detection method is recorded because a register that credits every defect to

@@ -9,22 +9,22 @@ Cases in this suite: 16
 
 | ID | Requirement | Title | Technique | Priority | Automation |
 | --- | --- | --- | --- | --- | --- |
-| TC-XFER-001 | REQ-XFER-001 | Transfer a typical valid amount between two of the customer's accounts | Equivalence Partitioning | Critical | planned |
-| TC-XFER-002 | REQ-XFER-001 | Transfer through the service interface | Equivalence Partitioning | Critical | planned |
-| TC-XFER-003 | REQ-XFER-002 | The source is debited and the destination credited by the same amount | Equivalence Partitioning | Critical | planned |
-| TC-XFER-004 | REQ-XFER-003 | Reject a transfer of zero | Boundary Value Analysis | High | planned |
-| TC-XFER-005 | REQ-XFER-003 | Reject a transfer just below zero | Boundary Value Analysis | High | planned |
-| TC-XFER-006 | REQ-XFER-003 | Accept the smallest valid amount | Boundary Value Analysis | High | planned |
-| TC-XFER-007 | REQ-XFER-003 | Reject a clearly negative amount | Equivalence Partitioning | Critical | planned |
-| TC-XFER-008 | REQ-XFER-004 | Reject a non-numeric amount | Negative Testing | High | planned |
-| TC-XFER-009 | REQ-XFER-004 | Reject an empty amount | Boundary Value Analysis | High | planned |
-| TC-XFER-010 | REQ-XFER-004 | Handle an amount with more than two decimal places | Boundary Value Analysis | High | planned |
-| TC-XFER-011 | REQ-XFER-004 | Reject an amount containing a currency symbol or separators | Negative Testing | Medium | planned |
-| TC-XFER-012 | REQ-XFER-005 | Reject a transfer to an account that does not exist | Negative Testing | Critical | planned |
-| TC-XFER-013 | REQ-XFER-005 | Handle a transfer where source and destination are the same account | Decision Table Testing | High | planned |
-| TC-XFER-014 | REQ-XFER-006 | A completed transfer appears in both accounts' transaction history | Equivalence Partitioning | Critical | planned |
-| TC-XFER-015 | REQ-XFER-007 | Establish how a transfer exceeding the available balance is handled | Boundary Value Analysis | High | planned |
-| TC-XFER-016 | REQ-XFER-001 | Transfer across browsers and account types, reduced by pairwise selection | Pairwise Testing | Medium | planned |
+| TC-XFER-001 | REQ-XFER-001 | Transfer a typical valid amount between two of the customer's accounts | Equivalence Partitioning | Critical | automated |
+| TC-XFER-002 | REQ-XFER-001 | Transfer through the service interface | Equivalence Partitioning | Critical | automated |
+| TC-XFER-003 | REQ-XFER-002 | The source is debited and the destination credited by the same amount | Equivalence Partitioning | Critical | automated |
+| TC-XFER-004 | REQ-XFER-003 | Reject a transfer of zero | Boundary Value Analysis | High | automated |
+| TC-XFER-005 | REQ-XFER-003 | Reject a transfer just below zero | Boundary Value Analysis | High | automated |
+| TC-XFER-006 | REQ-XFER-003 | Accept the smallest valid amount | Boundary Value Analysis | High | automated |
+| TC-XFER-007 | REQ-XFER-003 | Reject a clearly negative amount | Equivalence Partitioning | Critical | automated |
+| TC-XFER-008 | REQ-XFER-004 | Reject a non-numeric amount | Negative Testing | High | automated |
+| TC-XFER-009 | REQ-XFER-004 | Reject an empty amount | Boundary Value Analysis | High | automated |
+| TC-XFER-010 | REQ-XFER-004 | Handle an amount with more than two decimal places | Boundary Value Analysis | High | automated |
+| TC-XFER-011 | REQ-XFER-004 | Reject an amount containing a currency symbol or separators | Negative Testing | Medium | automated |
+| TC-XFER-012 | REQ-XFER-005 | Reject a transfer to an account that does not exist | Negative Testing | Critical | automated |
+| TC-XFER-013 | REQ-XFER-005 | Handle a transfer where source and destination are the same account | Decision Table Testing | High | automated |
+| TC-XFER-014 | REQ-XFER-006 | A completed transfer appears in both accounts' transaction history | Equivalence Partitioning | Critical | automated |
+| TC-XFER-015 | REQ-XFER-007 | Establish how a transfer exceeding the available balance is handled | Boundary Value Analysis | High | automated |
+| TC-XFER-016 | REQ-XFER-001 | Transfer across browsers and account types, reduced by pairwise selection | Pairwise Testing | Medium | automated |
 
 ## TC-XFER-001 Transfer a typical valid amount between two of the customer's accounts
 
@@ -32,7 +32,7 @@ Cases in this suite: 16
 **Technique** Equivalence Partitioning  
 **Layer** ui  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/ui/test_transfer_ui.py::test_a_valid_transfer_shows_a_confirmation)  
 **Introduced in phase** 3
 
 **Preconditions** The customer owns at least two accounts and the source holds at least 100.00.
@@ -53,7 +53,7 @@ Cases in this suite: 16
 **Technique** Equivalence Partitioning  
 **Layer** api  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/api/test_transfer_api.py::test_a_valid_transfer_is_accepted)  
 **Introduced in phase** 3
 
 **Preconditions** Two accounts belonging to the same customer are known.
@@ -72,7 +72,7 @@ Cases in this suite: 16
 **Technique** Equivalence Partitioning  
 **Layer** database  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/database/test_transaction_correctness.py::test_a_transfer_debits_and_credits_the_ledger)  
 **Introduced in phase** 4
 
 **Preconditions** Two accounts are known and their balances have been recorded.
@@ -94,7 +94,7 @@ Cases in this suite: 16
 **Technique** Boundary Value Analysis  
 **Layer** api  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/api/test_transfer_api.py::test_invalid_amounts_do_not_move_money)  
 **Introduced in phase** 3
 
 **Preconditions** Two valid accounts are known.
@@ -113,7 +113,7 @@ Cases in this suite: 16
 **Technique** Boundary Value Analysis  
 **Layer** api  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/api/test_transfer_api.py::test_invalid_amounts_do_not_move_money)  
 **Introduced in phase** 3
 
 **Preconditions** Two valid accounts are known.
@@ -132,7 +132,7 @@ Cases in this suite: 16
 **Technique** Boundary Value Analysis  
 **Layer** api  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/api/test_transfer_api.py::test_the_smallest_valid_amount_is_accepted)  
 **Introduced in phase** 3
 
 **Preconditions** Two valid accounts are known.
@@ -152,7 +152,7 @@ Cases in this suite: 16
 **Technique** Equivalence Partitioning  
 **Layer** api  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/api/test_transfer_api.py::test_invalid_amounts_do_not_move_money)  
 **Introduced in phase** 3
 
 **Preconditions** Two valid accounts are known.
@@ -171,7 +171,7 @@ Cases in this suite: 16
 **Technique** Negative Testing  
 **Layer** ui  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/api/test_transfer_validation_api.py::test_a_malformed_amount_does_not_move_money)  
 **Introduced in phase** 3
 
 **Preconditions** The transfer page is displayed.
@@ -190,7 +190,7 @@ Cases in this suite: 16
 **Technique** Boundary Value Analysis  
 **Layer** ui  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/api/test_transfer_validation_api.py::test_a_malformed_amount_does_not_move_money)  
 **Introduced in phase** 3
 
 **Preconditions** The transfer page is displayed.
@@ -209,7 +209,7 @@ Cases in this suite: 16
 **Technique** Boundary Value Analysis  
 **Layer** api  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/api/test_transfer_validation_api.py::test_an_amount_with_excess_precision_debits_and_credits_the_same)  
 **Introduced in phase** 4
 
 **Preconditions** Two valid accounts are known.
@@ -229,7 +229,7 @@ Cases in this suite: 16
 **Technique** Negative Testing  
 **Layer** ui  
 **Priority** Medium  
-**Automation** planned  
+**Automation** automated (tests/api/test_transfer_validation_api.py::test_a_malformed_amount_does_not_move_money)  
 **Introduced in phase** 3
 
 **Preconditions** The transfer page is displayed.
@@ -248,7 +248,7 @@ Cases in this suite: 16
 **Technique** Negative Testing  
 **Layer** api  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/api/test_transfer_api.py::test_a_transfer_to_a_non_existent_account_does_not_debit_the_source)  
 **Introduced in phase** 4
 
 **Preconditions** A valid source account is known.
@@ -268,7 +268,7 @@ Cases in this suite: 16
 **Technique** Decision Table Testing  
 **Layer** api  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/api/test_transfer_api.py::test_a_transfer_to_the_same_account_nets_to_zero)  
 **Introduced in phase** 4
 
 **Preconditions** One valid account is known.
@@ -288,7 +288,7 @@ Cases in this suite: 16
 **Technique** Equivalence Partitioning  
 **Layer** api  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/database/test_transaction_correctness.py::test_a_transfer_writes_one_transaction_to_each_account)  
 **Introduced in phase** 4
 
 **Preconditions** A transfer has been completed between two known accounts.
@@ -309,7 +309,7 @@ Cases in this suite: 16
 **Technique** Boundary Value Analysis  
 **Layer** api  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/api/test_transfer_validation_api.py::test_a_transfer_of_exactly_the_available_balance_is_accepted)  
 **Introduced in phase** 4
 
 **Preconditions** The source account balance is known.
@@ -332,7 +332,7 @@ Cases in this suite: 16
 **Technique** Pairwise Testing  
 **Layer** ui  
 **Priority** Medium  
-**Automation** planned  
+**Automation** automated (tests/ui/test_transfer_pairwise_ui.py::test_a_transfer_from_each_pairwise_combination)  
 **Introduced in phase** 3
 
 **Preconditions** Accounts of both types exist and all three browsers are available.

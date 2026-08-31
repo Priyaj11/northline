@@ -9,13 +9,13 @@ Cases in this suite: 7
 
 | ID | Requirement | Title | Technique | Priority | Automation |
 | --- | --- | --- | --- | --- | --- |
-| TC-ACC-001 | REQ-ACC-001 | Automated scan of the login page | Equivalence Partitioning | High | planned |
-| TC-ACC-002 | REQ-ACC-001 | Automated scan of the account overview page | Equivalence Partitioning | High | planned |
-| TC-ACC-003 | REQ-ACC-001 | Automated scan of the transfer page | Equivalence Partitioning | High | planned |
-| TC-ACC-004 | REQ-ACC-002 | Every form input has an associated label | Equivalence Partitioning | High | planned |
+| TC-ACC-001 | REQ-ACC-001 | Automated scan of the login page | Equivalence Partitioning | High | automated |
+| TC-ACC-002 | REQ-ACC-001 | Automated scan of the account overview page | Equivalence Partitioning | High | automated |
+| TC-ACC-003 | REQ-ACC-001 | Automated scan of the transfer page | Equivalence Partitioning | High | automated |
+| TC-ACC-004 | REQ-ACC-002 | Every form input has an associated label | Equivalence Partitioning | High | automated |
 | TC-ACC-005 | REQ-ACC-003 | Complete a login using the keyboard alone | State Transition Testing | High | manual |
 | TC-ACC-006 | REQ-ACC-003 | Complete a transfer using the keyboard alone | State Transition Testing | High | manual |
-| TC-ACC-007 | REQ-ACC-002 | Validation errors are announced, not only shown in colour | Negative Testing | High | planned |
+| TC-ACC-007 | REQ-ACC-002 | Validation errors are announced, not only shown in colour | Negative Testing | High | automated |
 
 ## TC-ACC-001 Automated scan of the login page
 
@@ -23,7 +23,7 @@ Cases in this suite: 7
 **Technique** Equivalence Partitioning  
 **Layer** accessibility  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/accessibility/test_axe_scans.py::test_key_pages_have_no_critical_or_serious_violations)  
 **Introduced in phase** 5
 
 **Preconditions** The login page is displayed.
@@ -43,7 +43,7 @@ Cases in this suite: 7
 **Technique** Equivalence Partitioning  
 **Layer** accessibility  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/accessibility/test_axe_scans.py::test_key_pages_have_no_critical_or_serious_violations)  
 **Introduced in phase** 5
 
 **Preconditions** A customer is logged in.
@@ -63,7 +63,7 @@ Cases in this suite: 7
 **Technique** Equivalence Partitioning  
 **Layer** accessibility  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/accessibility/test_axe_scans.py::test_key_pages_have_no_critical_or_serious_violations)  
 **Introduced in phase** 5
 
 **Preconditions** A customer is logged in.
@@ -83,7 +83,7 @@ Cases in this suite: 7
 **Technique** Equivalence Partitioning  
 **Layer** accessibility  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/accessibility/test_axe_scans.py::test_every_form_input_has_an_accessible_name)  
 **Introduced in phase** 5
 
 **Preconditions** The login, transfer and bill payment forms are reachable.
@@ -144,7 +144,7 @@ Cases in this suite: 7
 **Technique** Negative Testing  
 **Layer** accessibility  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/accessibility/test_axe_scans.py::test_a_validation_error_is_conveyed_by_more_than_colour)  
 **Introduced in phase** 5
 
 **Preconditions** The transfer form is displayed.

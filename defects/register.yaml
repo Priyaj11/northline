@@ -130,3 +130,21 @@ defects:
       accepts a balance it cannot subsequently read, so the write path and the
       read path disagree about what a balance may contain. Recoverable only by
       destroying all data.
+
+  - id: DEF-008
+    title: The transaction date range search accepts an invalid date
+    severity: Medium
+    priority: P3
+    status: Open
+    requirements: [REQ-TXN-002]
+    test_cases: [TC-TXN-003]
+    detected_in_phase: 7
+    detected_on: 2026-08-31
+    detection_method: designed test case
+    detection_layer: ui
+    reproducibility: consistent
+    document: DEF-008.md
+    note: >
+      The page validates the shape of the date string and not the values inside
+      it, so any two-digit, two-digit, four-digit hyphenated sequence is
+      accepted. A customer entering day-month-year order is told nothing.

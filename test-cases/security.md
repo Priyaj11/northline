@@ -9,14 +9,14 @@ Cases in this suite: 8
 
 | ID | Requirement | Title | Technique | Priority | Automation |
 | --- | --- | --- | --- | --- | --- |
-| TC-SEC-001 | REQ-SEC-001 | Account data requires authentication | Negative Testing | Critical | planned |
-| TC-SEC-002 | REQ-SEC-001 | Transaction data requires authentication | Negative Testing | Critical | planned |
-| TC-SEC-003 | REQ-SEC-002 | A customer cannot read another customer's account | Negative Testing | Critical | planned |
-| TC-SEC-004 | REQ-SEC-002 | A customer cannot transfer from another customer's account | Negative Testing | Critical | planned |
-| TC-SEC-005 | REQ-SEC-003 | Credentials are not transmitted in the URL path | Negative Testing | High | planned |
-| TC-SEC-006 | REQ-SEC-004 | An authenticated page is not reachable without a session | State Transition Testing | Critical | planned |
-| TC-SEC-007 | REQ-SEC-004 | Behaviour of a session after the browser session ends | State Transition Testing | High | planned |
-| TC-SEC-008 | REQ-SEC-004 | Input validation on the transfer amount is enforced server side | Negative Testing | Critical | planned |
+| TC-SEC-001 | REQ-SEC-001 | Account data requires authentication | Negative Testing | Critical | automated |
+| TC-SEC-002 | REQ-SEC-001 | Transaction data requires authentication | Negative Testing | Critical | automated |
+| TC-SEC-003 | REQ-SEC-002 | A customer cannot read another customer's account | Negative Testing | Critical | automated |
+| TC-SEC-004 | REQ-SEC-002 | A customer cannot transfer from another customer's account | Negative Testing | Critical | automated |
+| TC-SEC-005 | REQ-SEC-003 | Credentials are not transmitted in the URL path | Negative Testing | High | automated |
+| TC-SEC-006 | REQ-SEC-004 | An authenticated page is not reachable without a session | State Transition Testing | Critical | automated |
+| TC-SEC-007 | REQ-SEC-004 | Behaviour of a session after the browser session ends | State Transition Testing | High | automated |
+| TC-SEC-008 | REQ-SEC-004 | Input validation on the transfer amount is enforced server side | Negative Testing | Critical | automated |
 
 ## TC-SEC-001 Account data requires authentication
 
@@ -24,7 +24,7 @@ Cases in this suite: 8
 **Technique** Negative Testing  
 **Layer** security  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/security/test_service_authorization.py::test_account_data_requires_authentication)  
 **Introduced in phase** 5
 
 **Preconditions** A customer identifier is known. No session is established.
@@ -44,7 +44,7 @@ Cases in this suite: 8
 **Technique** Negative Testing  
 **Layer** security  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/security/test_service_authorization.py::test_transaction_data_requires_authentication)  
 **Introduced in phase** 5
 
 **Preconditions** An account identifier is known. No session is established.
@@ -64,7 +64,7 @@ Cases in this suite: 8
 **Technique** Negative Testing  
 **Layer** security  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/security/test_service_authorization.py::test_one_customer_cannot_read_another_customers_account)  
 **Introduced in phase** 5
 
 **Preconditions** Two customers exist, each owning at least one account.
@@ -85,7 +85,7 @@ Cases in this suite: 8
 **Technique** Negative Testing  
 **Layer** security  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/security/test_session_ui.py::test_the_session_ends_when_the_customer_logs_out)  
 **Introduced in phase** 5
 
 **Preconditions** Two customers exist with accounts.
@@ -106,7 +106,7 @@ Cases in this suite: 8
 **Technique** Negative Testing  
 **Layer** security  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/security/test_service_authorization.py::test_credentials_are_not_carried_in_the_url_path)  
 **Introduced in phase** 5
 
 **Preconditions** The service interface is reachable.
@@ -126,7 +126,7 @@ Cases in this suite: 8
 **Technique** State Transition Testing  
 **Layer** security  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/security/test_session_ui.py::test_a_protected_page_returns_no_customer_data_without_a_session)  
 **Introduced in phase** 5
 
 **Preconditions** No session is established.
@@ -145,7 +145,7 @@ Cases in this suite: 8
 **Technique** State Transition Testing  
 **Layer** security  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/security/test_session_ui.py::test_the_session_cookie_carries_its_protections)  
 **Introduced in phase** 5
 
 **Preconditions** A customer has logged in.
@@ -165,7 +165,7 @@ Cases in this suite: 8
 **Technique** Negative Testing  
 **Layer** security  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/security/test_service_authorization.py::test_amount_validation_is_enforced_on_the_server)  
 **Introduced in phase** 5
 
 **Preconditions** Two valid accounts are known.

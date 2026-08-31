@@ -14,27 +14,27 @@ Cases in this suite: 29
 | TC-ENV-003 | REQ-ENV-003 | The served application is ParaBank | Equivalence Partitioning | High | automated |
 | TC-ENV-004 | REQ-ENV-004 | The application database schema exists | Equivalence Partitioning | Critical | automated |
 | TC-ENV-005 | REQ-ENV-005 | The certification data store accepts connections | Equivalence Partitioning | Critical | automated |
-| TC-ACCT-001 | REQ-ACCT-001 | View the list of accounts in the browser | Equivalence Partitioning | Critical | planned |
-| TC-ACCT-002 | REQ-ACCT-001 | Retrieve the list of accounts through the service interface | Equivalence Partitioning | Critical | planned |
-| TC-ACCT-003 | REQ-ACCT-002 | View a single account's detail | Equivalence Partitioning | High | planned |
-| TC-ACCT-004 | REQ-ACCT-002 | Request an account identifier that does not exist | Negative Testing | Medium | planned |
-| TC-ACCT-005 | REQ-ACCT-003 | The balance in the browser matches the service and the data store | Equivalence Partitioning | Critical | planned |
-| TC-ACCT-006 | REQ-ACCT-004 | Open a new account funded from an existing one | Equivalence Partitioning | Medium | planned |
-| TC-BILL-001 | REQ-BILL-001 | Pay a bill with valid details | Equivalence Partitioning | High | planned |
-| TC-BILL-002 | REQ-BILL-001 | A bill payment debits the source account by the exact amount | Equivalence Partitioning | High | planned |
-| TC-BILL-003 | REQ-BILL-002 | Reject a bill payment with missing payee details | Negative Testing | Medium | planned |
-| TC-BILL-004 | REQ-BILL-003 | A completed bill payment appears in the transaction history | Equivalence Partitioning | High | planned |
-| TC-TXN-001 | REQ-TXN-001 | View an account's transaction history | Equivalence Partitioning | High | planned |
-| TC-TXN-002 | REQ-TXN-002 | Filter transaction history by amount | Equivalence Partitioning | Medium | planned |
-| TC-TXN-003 | REQ-TXN-002 | Filter transaction history by date range | Boundary Value Analysis | Medium | planned |
-| TC-TXN-004 | REQ-TXN-003 | A transaction record carries account, amount, type and date | Equivalence Partitioning | High | planned |
-| TC-DATA-001 | REQ-DATA-001 | Extract accounts and transactions into the certification data store | Equivalence Partitioning | Critical | planned |
-| TC-DATA-002 | REQ-DATA-002 | Generate a settlement file from transaction data | Equivalence Partitioning | Critical | planned |
-| TC-DATA-003 | REQ-DATA-003 | Reconciliation detects a missing record | Negative Testing | Critical | planned |
-| TC-DATA-004 | REQ-DATA-003 | Reconciliation detects a duplicate record | Negative Testing | Critical | planned |
-| TC-DATA-005 | REQ-DATA-003 | Reconciliation detects an amount mismatch | Negative Testing | Critical | planned |
-| TC-DATA-006 | REQ-DATA-003 | Reconciliation detects an account mismatch | Negative Testing | Critical | planned |
-| TC-DATA-007 | REQ-DATA-004 | Reconciliation reports totals and an overall status | Equivalence Partitioning | High | planned |
+| TC-ACCT-001 | REQ-ACCT-001 | View the list of accounts in the browser | Equivalence Partitioning | Critical | automated |
+| TC-ACCT-002 | REQ-ACCT-001 | Retrieve the list of accounts through the service interface | Equivalence Partitioning | Critical | automated |
+| TC-ACCT-003 | REQ-ACCT-002 | View a single account's detail | Equivalence Partitioning | High | automated |
+| TC-ACCT-004 | REQ-ACCT-002 | Request an account identifier that does not exist | Negative Testing | Medium | automated |
+| TC-ACCT-005 | REQ-ACCT-003 | The balance in the browser matches the service and the data store | Equivalence Partitioning | Critical | automated |
+| TC-ACCT-006 | REQ-ACCT-004 | Open a new account funded from an existing one | Equivalence Partitioning | Medium | automated |
+| TC-BILL-001 | REQ-BILL-001 | Pay a bill with valid details | Equivalence Partitioning | High | automated |
+| TC-BILL-002 | REQ-BILL-001 | A bill payment debits the source account by the exact amount | Equivalence Partitioning | High | automated |
+| TC-BILL-003 | REQ-BILL-002 | Reject a bill payment with missing payee details | Negative Testing | Medium | automated |
+| TC-BILL-004 | REQ-BILL-003 | A completed bill payment appears in the transaction history | Equivalence Partitioning | High | automated |
+| TC-TXN-001 | REQ-TXN-001 | View an account's transaction history | Equivalence Partitioning | High | automated |
+| TC-TXN-002 | REQ-TXN-002 | Filter transaction history by amount | Equivalence Partitioning | Medium | automated |
+| TC-TXN-003 | REQ-TXN-002 | Filter transaction history by date range | Boundary Value Analysis | Medium | automated |
+| TC-TXN-004 | REQ-TXN-003 | A transaction record carries account, amount, type and date | Equivalence Partitioning | High | automated |
+| TC-DATA-001 | REQ-DATA-001 | Extract accounts and transactions into the certification data store | Equivalence Partitioning | Critical | automated |
+| TC-DATA-002 | REQ-DATA-002 | Generate a settlement file from transaction data | Equivalence Partitioning | Critical | automated |
+| TC-DATA-003 | REQ-DATA-003 | Reconciliation detects a missing record | Negative Testing | Critical | automated |
+| TC-DATA-004 | REQ-DATA-003 | Reconciliation detects a duplicate record | Negative Testing | Critical | automated |
+| TC-DATA-005 | REQ-DATA-003 | Reconciliation detects an amount mismatch | Negative Testing | Critical | automated |
+| TC-DATA-006 | REQ-DATA-003 | Reconciliation detects an account mismatch | Negative Testing | Critical | automated |
+| TC-DATA-007 | REQ-DATA-004 | Reconciliation reports totals and an overall status | Equivalence Partitioning | High | automated |
 | TC-PERF-001 | REQ-PERF-001 | Login response time under load | Boundary Value Analysis | Medium | planned |
 | TC-PERF-002 | REQ-PERF-002 | Account retrieval response time under load | Boundary Value Analysis | Medium | planned |
 | TC-PERF-003 | REQ-PERF-003 | Error rate under load | Boundary Value Analysis | Medium | planned |
@@ -140,7 +140,7 @@ Cases in this suite: 29
 **Technique** Equivalence Partitioning  
 **Layer** ui  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/ui/test_accounts_ui.py::test_the_overview_lists_the_customers_accounts)  
 **Introduced in phase** 3
 
 **Preconditions** A customer with at least one account is logged in.
@@ -159,7 +159,7 @@ Cases in this suite: 29
 **Technique** Equivalence Partitioning  
 **Layer** api  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/api/test_accounts_api.py::test_customer_accounts_returns_a_list)  
 **Introduced in phase** 3
 
 **Preconditions** A customer identifier is known.
@@ -178,7 +178,7 @@ Cases in this suite: 29
 **Technique** Equivalence Partitioning  
 **Layer** ui  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/ui/test_accounts_ui.py::test_every_displayed_balance_matches_the_service)  
 **Introduced in phase** 3
 
 **Preconditions** An account identifier is known.
@@ -197,7 +197,7 @@ Cases in this suite: 29
 **Technique** Negative Testing  
 **Layer** api  
 **Priority** Medium  
-**Automation** planned  
+**Automation** automated (tests/api/test_accounts_api.py::test_a_non_existent_account_returns_a_client_error)  
 **Introduced in phase** 3
 
 **Preconditions** An identifier known not to exist.
@@ -216,7 +216,7 @@ Cases in this suite: 29
 **Technique** Equivalence Partitioning  
 **Layer** database  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/database/test_extraction.py::test_every_stored_balance_matches_the_source)  
 **Introduced in phase** 4
 
 **Preconditions** An account identifier is known and data has been extracted.
@@ -238,7 +238,7 @@ Cases in this suite: 29
 **Technique** Equivalence Partitioning  
 **Layer** ui  
 **Priority** Medium  
-**Automation** planned  
+**Automation** automated (tests/ui/test_registration_ui.py::test_a_customer_can_open_a_new_account)  
 **Introduced in phase** 3
 
 **Preconditions** The customer has an account with sufficient funds.
@@ -258,7 +258,7 @@ Cases in this suite: 29
 **Technique** Equivalence Partitioning  
 **Layer** ui  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/ui/test_billpay_ui.py::test_a_bill_payment_through_the_browser_is_confirmed)  
 **Introduced in phase** 3
 
 **Preconditions** The customer has an account with sufficient funds.
@@ -278,7 +278,7 @@ Cases in this suite: 29
 **Technique** Equivalence Partitioning  
 **Layer** database  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/database/test_transaction_correctness.py::test_a_bill_payment_debits_the_source_account)  
 **Introduced in phase** 4
 
 **Preconditions** The source account balance has been recorded.
@@ -297,7 +297,7 @@ Cases in this suite: 29
 **Technique** Negative Testing  
 **Layer** ui  
 **Priority** Medium  
-**Automation** planned  
+**Automation** automated (tests/ui/test_billpay_ui.py::test_a_bill_payment_with_a_missing_payee_name_is_refused)  
 **Introduced in phase** 3
 
 **Preconditions** The bill payment form is displayed.
@@ -316,7 +316,7 @@ Cases in this suite: 29
 **Technique** Equivalence Partitioning  
 **Layer** api  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/ui/test_billpay_ui.py::test_a_bill_payment_appears_in_the_account_activity)  
 **Introduced in phase** 4
 
 **Preconditions** A bill payment has been completed.
@@ -335,7 +335,7 @@ Cases in this suite: 29
 **Technique** Equivalence Partitioning  
 **Layer** ui  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/ui/test_billpay_ui.py::test_the_account_activity_lists_transactions)  
 **Introduced in phase** 3
 
 **Preconditions** An account with at least one transaction exists.
@@ -354,7 +354,7 @@ Cases in this suite: 29
 **Technique** Equivalence Partitioning  
 **Layer** api  
 **Priority** Medium  
-**Automation** planned  
+**Automation** automated (tests/api/test_transactions_api.py::test_filtering_transactions_by_amount_returns_only_that_amount)  
 **Introduced in phase** 3
 
 **Preconditions** A transaction of a known amount exists.
@@ -373,7 +373,7 @@ Cases in this suite: 29
 **Technique** Boundary Value Analysis  
 **Layer** api  
 **Priority** Medium  
-**Automation** planned  
+**Automation** automated (tests/ui/test_billpay_ui.py::test_the_date_range_filter_rejects_a_malformed_date)  
 **Introduced in phase** 3
 
 **Preconditions** A transaction with a known date exists.
@@ -392,7 +392,7 @@ Cases in this suite: 29
 **Technique** Equivalence Partitioning  
 **Layer** api  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/api/test_transactions_api.py::test_transaction_records_have_the_expected_fields_and_types)  
 **Introduced in phase** 3
 
 **Preconditions** At least one transaction exists.
@@ -411,7 +411,7 @@ Cases in this suite: 29
 **Technique** Equivalence Partitioning  
 **Layer** database  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/database/test_extraction.py::test_the_schema_creates_the_expected_tables)  
 **Introduced in phase** 4
 
 **Preconditions** The application is provisioned and the data store is reachable.
@@ -431,7 +431,7 @@ Cases in this suite: 29
 **Technique** Equivalence Partitioning  
 **Layer** reconciliation  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/reconciliation/test_settlement_end_to_end.py::test_a_settlement_file_is_generated_from_the_ledger)  
 **Introduced in phase** 4
 
 **Preconditions** Transaction data has been extracted.
@@ -451,7 +451,7 @@ Cases in this suite: 29
 **Technique** Negative Testing  
 **Layer** reconciliation  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/reconciliation/test_reconciler.py::test_a_missing_record_is_detected)  
 **Introduced in phase** 4
 
 **Preconditions** A settlement file and matching data store content exist.
@@ -471,7 +471,7 @@ Cases in this suite: 29
 **Technique** Negative Testing  
 **Layer** reconciliation  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/reconciliation/test_reconciler.py::test_identical_data_reconciles_cleanly)  
 **Introduced in phase** 4
 
 **Preconditions** A settlement file and matching data store content exist.
@@ -491,7 +491,7 @@ Cases in this suite: 29
 **Technique** Negative Testing  
 **Layer** reconciliation  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/reconciliation/test_settlement_end_to_end.py::test_an_amount_altered_by_one_cent_is_detected)  
 **Introduced in phase** 4
 
 **Preconditions** A settlement file and matching data store content exist.
@@ -511,7 +511,7 @@ Cases in this suite: 29
 **Technique** Negative Testing  
 **Layer** reconciliation  
 **Priority** Critical  
-**Automation** planned  
+**Automation** automated (tests/reconciliation/test_settlement_end_to_end.py::test_an_account_changed_to_another_real_account_is_detected)  
 **Introduced in phase** 4
 
 **Preconditions** A settlement file and matching data store content exist.
@@ -531,7 +531,7 @@ Cases in this suite: 29
 **Technique** Equivalence Partitioning  
 **Layer** reconciliation  
 **Priority** High  
-**Automation** planned  
+**Automation** automated (tests/reconciliation/test_settlement_end_to_end.py::test_the_report_states_totals_and_an_overall_status)  
 **Introduced in phase** 4
 
 **Preconditions** A reconciliation run has completed.
