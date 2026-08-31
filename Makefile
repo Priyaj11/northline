@@ -86,3 +86,6 @@ a11y:
 
 a11y-test:
 	$(PY) -m pytest -m accessibility -v --browser chromium
+
+sec:
+	$(PY) -m pytest -m security -v -s --browser chromium
