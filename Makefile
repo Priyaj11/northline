@@ -89,3 +89,15 @@ a11y-test:
 
 sec:
 	$(PY) -m pytest -m security -v -s --browser chromium
+
+perf:
+	@mkdir -p reports/performance
+	@for u in 10 25 50; do \
+	  echo "=== $$u users ==="; \
+	  jmeter -n -t performance/northline.jmx \
+	    -Jusers=$$u -Jloops=40 -Jrampup=5 \
+	    -l reports/performance/profile-$$u.jtl \
+	    -j reports/performance/profile-$$u.log | grep -E "^summary ="; \
+	  sleep 5; \
+	done
+	$(PY) scripts/analyse_performance.py
