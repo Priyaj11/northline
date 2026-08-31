@@ -145,3 +145,96 @@ def test_every_form_input_has_an_accessible_name(scan, page_key: str):
         f"{page_key} page has {elements} form element(s) with no accessible name:\n"
         + describe(result)
     )
+
+
+@pytest.mark.xfail(
+    strict=True,
+    raises=AssertionError,
+    reason=(
+        "DEF-003, further evidence: validation errors are not associated with "
+        "the field they concern. Confirmed 2026-08-31: submitting a non-numeric "
+        "amount produces readable error text, which satisfies WCAG 1.4.1, but "
+        "#amount carries no aria-describedby and no aria-invalid, and no live "
+        "region exists, so WCAG 3.3.1 fails. Same root cause as the 28 unlabelled "
+        "controls already in DEF-003: nothing in the markup connects text to a "
+        "form control."
+    ),
+)
+def test_a_validation_error_is_conveyed_by_more_than_colour(
+    page, base_url: str, settings: Settings
+):
+    """TC-ACC-007 / REQ-ACC-002.
+
+    Two separate requirements, both from WCAG 2.1 level A.
+
+    Success criterion 1.4.1, Use of Colour: information must not be conveyed by
+    colour alone. A field outlined in red and nothing else excludes anyone who
+    cannot distinguish it, and that is a larger group than most teams assume.
+
+    Success criterion 3.3.1, Error Identification: the error must be described
+    in text, and a screen reader user must be able to associate it with the
+    field it refers to.
+
+    This submits an invalid transfer and inspects what the page actually
+    produces, rather than scanning a static page. axe-core cannot find this on
+    its own, because the error does not exist until a form is submitted.
+    """
+    page.goto(f"{base_url}/index.htm")
+    page.fill("input[name='username']", settings.sut.username)
+    page.fill("input[name='password']", settings.sut.password)
+    page.click("input[type='submit'][value='Log In']")
+    page.wait_for_load_state("networkidle")
+
+    page.goto(f"{base_url}/transfer.htm")
+    page.wait_for_load_state("networkidle")
+    page.wait_for_selector("#fromAccountId option", state="attached")
+
+    page.fill("#amount", "abc")
+    page.click("input[type='submit'][value='Transfer']")
+    page.wait_for_load_state("networkidle")
+
+    state = page.evaluate("""() => {
+        const clean = s => (s || '').replace(/\\s+/g, ' ').trim();
+        // VISIBLE errors only. ParaBank pre-renders error elements and keeps
+        // them hidden until needed, so querying by class alone returns text
+        // from elements a user never sees. Confirmed 2026-08-31: the message
+        // "An internal error has occurred and has been logged" is present in
+        // the markup on page load, before anything is submitted, and after a
+        // successful transfer. Reading textContent without checking visibility
+        // reported it as a real error, which it is not.
+        const visible = e => {
+            const cs = getComputedStyle(e);
+            const r = e.getBoundingClientRect();
+            return cs.display !== 'none' && cs.visibility !== 'hidden'
+                   && r.width > 0 && r.height > 0;
+        };
+        const errors = Array.from(document.querySelectorAll(
+            '.error, [role="alert"], [aria-live], .field-error')).filter(visible);
+        const amount = document.querySelector('#amount');
+        return {
+            errorTexts: errors.map(e => clean(e.textContent)).filter(Boolean),
+            anyLiveRegion: errors.some(e =>
+                e.getAttribute('role') === 'alert' || e.hasAttribute('aria-live')),
+            amountDescribedBy: amount ? amount.getAttribute('aria-describedby') : null,
+            amountInvalid: amount ? amount.getAttribute('aria-invalid') : null,
+            panelText: clean((document.querySelector('#rightPanel') || {}).textContent
+                             || '').slice(0, 200),
+        };
+    }""")
+
+    print(f"validation state after an invalid amount: {state}")
+
+    assert state["errorTexts"] or "error" in state["panelText"].lower(), (
+        "Submitting a non-numeric amount produced no error text at all. "
+        f"The page shows: {state['panelText']!r}"
+    )
+
+    assert state["amountDescribedBy"] or state["anyLiveRegion"], (
+        "The validation error is not associated with the amount field and is not "
+        "in a live region, so a screen reader user is not told what went wrong "
+        "or which field it concerns.\n"
+        f"  aria-describedby on #amount: {state['amountDescribedBy']}\n"
+        f"  aria-invalid on #amount:     {state['amountInvalid']}\n"
+        f"  live region present:         {state['anyLiveRegion']}\n"
+        f"  error text found:            {state['errorTexts']}"
+    )
