@@ -86,3 +86,32 @@ drift check.
 The distinction is worth stating because the two look alike in a directory
 listing. A certificate without a date is not a certificate, and a view that
 changes every time it is regenerated cannot be checked for drift.
+
+## When one document is secretly two
+
+The view versus record distinction above has a third case, found the hard way.
+
+docs/requirements-traceability-matrix.md was BOTH. Its structure is a view of
+the registers, so it must be deterministic. Its result column was a record of one
+run, so it varied with whichever reports happened to be on disk. The committed
+copy held results from a local run; the pipeline regenerated it with an empty
+reports directory and got five different lines.
+
+Neither the view rule nor the record rule fits a file like that, because the
+file was doing two jobs. The fix was not to exempt it from the check, which
+would have removed drift protection from the register-derived columns as well.
+The fix was to split it:
+
+    docs/requirements-traceability-matrix.md
+        register-derived columns only, deterministic, drift checked
+
+    reports/traceability-with-results.md
+        the same rows with a result column, generated after a run, not committed
+
+The general lesson: when an artefact will not satisfy a rule that ought to apply
+to it, check whether it is doing two jobs before weakening the rule. Exempting
+it would have been quicker and would have quietly removed a real check.
+
+Verified by generating the committed matrix twice, once with the JUnit reports
+present and once with them removed, and confirming the two files were byte
+identical.
