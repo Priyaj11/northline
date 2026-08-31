@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import sys
 import time
+from datetime import datetime, timezone
 
 import requests
 
@@ -121,7 +122,23 @@ def main() -> int:
     log.info("Checking certification data store at %s:%s", settings.warehouse.host, settings.warehouse.port)
     warehouse_ok = check_warehouse(settings.warehouse.dsn)
 
-    if sut_ok and warehouse_ok:
+    ready = sut_ok and warehouse_ok
+
+    # Record the verdict so the certification engine has evidence for GATE-ENV.
+    # Without a file, that gate reports "no evidence" and blocks the release,
+    # which is the correct behaviour: a release must not be certified when
+    # nobody can show the environment was fit to test.
+    import json
+    record = {
+        "ready": ready,
+        "sut_ok": sut_ok,
+        "warehouse_ok": warehouse_ok,
+        "environment": settings.environment,
+        "checked_at": datetime.now(tz=timezone.utc).isoformat(),
+    }
+    (settings.reports_dir / "environment.json").write_text(json.dumps(record, indent=2))
+
+    if ready:
         log.info("ENVIRONMENT READY")
         return 0
     log.error("ENVIRONMENT NOT READY (sut_ok=%s, warehouse_ok=%s)", sut_ok, warehouse_ok)

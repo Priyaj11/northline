@@ -28,6 +28,7 @@ gates:
     rule: Every smoke test must pass
     threshold: 0
     unit: failed tests allowed
+    comparison: maximum
     on_failure: NO-GO
     rationale: >
       Smoke covers the paths without which nothing else can be tested. A single
@@ -39,6 +40,7 @@ gates:
     rule: No open defect of severity Critical or High
     threshold: 0
     unit: open defects allowed
+    comparison: maximum
     on_failure: NO-GO
     rationale: >
       In a banking context, Critical means money or customer data is at risk.
@@ -49,6 +51,7 @@ gates:
     rule: Reconciliation must report zero unexplained breaks
     threshold: 0
     unit: breaks allowed
+    comparison: maximum
     on_failure: NO-GO
     rationale: >
       An unexplained break means the money does not add up between two systems.
@@ -59,6 +62,7 @@ gates:
     rule: API test pass rate must meet the threshold
     threshold: 100
     unit: percent
+    comparison: minimum
     on_failure: NO-GO
     rationale: >
       API tests are deterministic. They do not depend on browser timing or
@@ -70,6 +74,7 @@ gates:
     rule: UI test pass rate must meet the threshold
     threshold: 95
     unit: percent
+    comparison: minimum
     on_failure: CONDITIONAL-GO
     rationale: >
       Browser tests carry genuine flakiness from timing and rendering. The
@@ -82,6 +87,7 @@ gates:
     rule: No critical or serious axe-core violations on key pages
     threshold: 0
     unit: critical or serious violations allowed
+    comparison: maximum
     on_failure: CONDITIONAL-GO
     rationale: >
       In Ontario this is a legal obligation under the Accessibility for
@@ -94,6 +100,7 @@ gates:
     rule: 95th percentile response time must stay under the limit
     threshold: 2000
     unit: milliseconds
+    comparison: maximum
     on_failure: CONDITIONAL-GO
     rationale: >
       The 95th percentile is used rather than the average because an average
@@ -105,6 +112,7 @@ gates:
     rule: Failed request rate under load must stay under the limit
     threshold: 1
     unit: percent
+    comparison: maximum
     on_failure: CONDITIONAL-GO
     rationale: >
       Correct but failing under load is still failing. One percent is a
@@ -115,6 +123,7 @@ gates:
     rule: Proportion of requirements with at least one executed test
     threshold: 90
     unit: percent
+    comparison: minimum
     on_failure: CONDITIONAL-GO
     rationale: >
       Measured from the traceability matrix. Coverage here means every

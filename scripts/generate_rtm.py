@@ -212,6 +212,22 @@ def main() -> int:
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text("\n".join(lines))
 
+    # A machine-readable summary for the certification engine, which needs the
+    # coverage figure for GATE-COVERAGE.
+    import json
+    reports_dir = REPO_ROOT / "reports"
+    reports_dir.mkdir(parents=True, exist_ok=True)
+    (reports_dir / "traceability.json").write_text(json.dumps({
+        "requirements": len(requirements),
+        "test_cases": len(cases),
+        "covered": covered,
+        "uncovered": uncovered,
+        "coverage_percent": coverage_pct,
+        "requirements_with_defects": sorted(
+            r["id"] for r in requirements if defects_by_requirement.get(r["id"])
+        ),
+    }, indent=2))
+
     log.info("Requirements: %d, test cases: %d", len(requirements), len(cases))
     log.info("Coverage: %s percent (%d covered, %d uncovered)", coverage_pct, covered, len(uncovered))
     log.info("Wrote %s", OUTPUT)

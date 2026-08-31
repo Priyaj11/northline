@@ -1,6 +1,6 @@
 PY := .venv/bin/python
 
-.PHONY: help up down logs init health smoke docs env clean reset newman ui ui-all-browsers
+.PHONY: help up down logs init health smoke docs env clean reset newman ui ui-all-browsers evidence certify
 
 help:
 	@echo "up      - start ParaBank and the PostgreSQL certification data store"
@@ -105,3 +105,25 @@ perf:
 
 jira:
 	$(PY) scripts/generate_jira_import.py
+
+evidence:
+	@mkdir -p reports
+	$(PY) scripts/healthcheck.py
+	$(PY) -m pytest -m smoke -q --junitxml=reports/junit-smoke.xml
+	$(PY) -m pytest -m api -q --junitxml=reports/junit-api.xml
+	$(PY) -m pytest -m "ui and not visual" -q --browser chromium \
+	  --junitxml=reports/junit-ui.xml
+	$(PY) scripts/extract.py
+	$(PY) -m pytest -m database -q --junitxml=reports/junit-database.xml
+	$(PY) -m pytest -m reconciliation -q --junitxml=reports/junit-reconciliation.xml
+	$(PY) scripts/reconcile.py
+	$(PY) -m pytest -m security -q --browser chromium \
+	  --junitxml=reports/junit-security.xml
+	$(PY) -m pytest -m accessibility -q --browser chromium \
+	  --junitxml=reports/junit-accessibility.xml
+	$(PY) scripts/generate_defect_report.py
+	$(PY) scripts/generate_rtm.py
+	@echo "Evidence collected. Performance is not included: run make perf separately."
+
+certify:
+	$(PY) scripts/certify.py
