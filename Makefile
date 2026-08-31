@@ -39,6 +39,7 @@ docs:
 	$(PY) scripts/generate_requirements_doc.py
 	$(PY) scripts/generate_test_cases_doc.py
 	$(PY) scripts/generate_defect_report.py
+	$(PY) scripts/generate_uat_doc.py
 	$(PY) scripts/generate_rtm.py
 	$(PY) scripts/generate_summary_report.py
 
