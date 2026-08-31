@@ -1,0 +1,113 @@
+# Northline defect register.
+#
+# The narrative writeups live in defects/DEF-NNN.md. This file is the
+# machine-readable index of them, and it is what the certification engine in
+# Phase 7 reads: GATE-CRITICAL-DEFECT fails a release on any open defect of
+# severity Critical or High.
+#
+# The register is the source of truth for the release decision, NOT the test
+# results. A known defect marked xfail in the suite still appears here as open,
+# so marking a test does not quietly make a defect disappear from the gate.
+#
+# severity  technical impact: how badly is the system broken
+# priority  business urgency: how soon must it be fixed
+# They vary independently. See docs/test-strategy.md.
+
+release: R1.0
+system_under_test: ParaBank
+
+defects:
+
+  - id: DEF-001
+    title: Transfer amounts are not validated, and negative amounts move money in reverse
+    severity: Critical
+    priority: P1
+    status: Open
+    requirements: [REQ-XFER-003]
+    test_cases: [TC-XFER-004, TC-XFER-005, TC-XFER-007, TC-SEC-008]
+    detected_in_phase: 3
+    detected_on: 2026-08-30
+    detection_method: designed test case
+    detection_layer: api
+    reproducibility: consistent
+    document: DEF-001.md
+
+  - id: DEF-002
+    title: The transfer endpoint declares JSON and returns plain text
+    severity: Medium
+    priority: P3
+    status: Open
+    requirements: [REQ-TXN-003]
+    test_cases: []
+    detected_in_phase: 3
+    detected_on: 2026-08-29
+    detection_method: exploratory
+    detection_layer: api
+    reproducibility: consistent
+    document: DEF-002.md
+    note: >
+      Found while discovering the API response shapes, not by a planned test
+      case. Recorded as exploratory rather than attributed to a test case that
+      did not exist at the time. A register that credits every defect to a
+      designed case overstates how much the test design found.
+
+  - id: DEF-003
+    title: Form fields have no accessible name
+    severity: High
+    priority: P2
+    status: Open
+    requirements: [REQ-ACC-002]
+    test_cases: [TC-ACC-004]
+    detected_in_phase: 5
+    detected_on: 2026-08-31
+    detection_method: designed test case
+    detection_layer: accessibility
+    reproducibility: consistent
+    document: DEF-003.md
+
+  - id: DEF-004
+    title: Page-level accessibility failures on every page
+    severity: Medium
+    priority: P3
+    status: Open
+    requirements: [REQ-ACC-001]
+    test_cases: [TC-ACC-001, TC-ACC-002, TC-ACC-003]
+    detected_in_phase: 5
+    detected_on: 2026-08-31
+    detection_method: designed test case
+    detection_layer: accessibility
+    reproducibility: consistent
+    document: DEF-004.md
+
+  - id: DEF-005
+    title: The REST services require no authentication
+    severity: Critical
+    priority: P1
+    status: Open
+    requirements: [REQ-SEC-001, REQ-SEC-002]
+    test_cases: [TC-SEC-001, TC-SEC-002, TC-SEC-003]
+    detected_in_phase: 5
+    detected_on: 2026-08-31
+    detection_method: designed test case
+    detection_layer: security
+    reproducibility: consistent
+    document: DEF-005.md
+    note: >
+      First observed during Phase 1 endpoint discovery and recorded as an
+      observation for four phases before being tested and raised. Recording it
+      as detected in Phase 5 is the honest entry: an observation is not a
+      defect until it has been tested against a requirement.
+
+  - id: DEF-006
+    title: Credentials are carried in the URL path
+    severity: High
+    priority: P2
+    status: Open
+    requirements: [REQ-SEC-003]
+    test_cases: [TC-SEC-005]
+    detected_in_phase: 5
+    detected_on: 2026-08-31
+    detection_method: designed test case
+    detection_layer: security
+    reproducibility: consistent
+    document: DEF-006.md
