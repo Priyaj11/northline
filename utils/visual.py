@@ -32,6 +32,7 @@ another.
 from __future__ import annotations
 
 import os
+import sys
 from pathlib import Path
 
 from PIL import Image, ImageChops
@@ -39,6 +40,21 @@ from PIL import Image, ImageChops
 REPO_ROOT = Path(__file__).resolve().parent.parent
 BASELINE_DIR = REPO_ROOT / "tests" / "ui" / "baselines"
 DIFF_DIR = REPO_ROOT / "reports" / "artifacts" / "visual"
+
+
+def platform_key() -> str:
+    """Baselines are per operating system as well as per browser.
+
+    Font rendering, form control styling and sub-pixel antialiasing all differ
+    between macOS, Linux and Windows. A baseline captured on one will never
+    match a screenshot taken on another, and the failure looks like a layout
+    regression when it is only a different machine.
+
+    Including the platform in the path makes that impossible to get wrong
+    silently: a run on a platform with no baselines creates its own rather than
+    comparing against somebody else's.
+    """
+    return sys.platform
 
 #: How far one colour channel must move before the pixel counts as changed.
 CHANNEL_THRESHOLD = 24
@@ -93,11 +109,11 @@ def assert_matches_baseline(page, name: str, browser_name: str,
     Set NORTHLINE_UPDATE_BASELINES=1 to accept the current appearance as the
     new baseline, after reviewing why it changed.
     """
-    baseline_dir = BASELINE_DIR / browser_name
+    baseline_dir = BASELINE_DIR / platform_key() / browser_name
     baseline_dir.mkdir(parents=True, exist_ok=True)
     baseline = baseline_dir / name
 
-    actual_dir = DIFF_DIR / browser_name
+    actual_dir = DIFF_DIR / platform_key() / browser_name
     actual_dir.mkdir(parents=True, exist_ok=True)
     actual = actual_dir / f"actual-{name}"
 
@@ -110,7 +126,7 @@ def assert_matches_baseline(page, name: str, browser_name: str,
         if _update_requested():
             return
         raise AssertionError(
-            f"No baseline existed for {browser_name}/{name}, so one was created from "
+            f"No baseline existed for {platform_key()}/{browser_name}/{name}, so one was created from "
             f"this run: {baseline.relative_to(REPO_ROOT)}\n"
             "Review the image, commit it, and re-run. The first run fails on purpose: "
             "accepting a screenshot as correct without anyone looking at it would mean "
@@ -122,7 +138,7 @@ def assert_matches_baseline(page, name: str, browser_name: str,
 
     if ratio > tolerance_ratio:
         raise AssertionError(
-            f"{browser_name}/{name} differs from its baseline: "
+            f"{platform_key()}/{browser_name}/{name} differs from its baseline: "
             f"{ratio:.4%} of pixels changed, tolerance {tolerance_ratio:.4%}.\n"
             f"  baseline: {baseline.relative_to(REPO_ROOT)}\n"
             f"  actual:   {actual.relative_to(REPO_ROOT)}\n"

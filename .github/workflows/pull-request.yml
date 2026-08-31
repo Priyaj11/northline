@@ -1,0 +1,155 @@
+# Fast feedback on every change.
+#
+# Runs the checks that are quick and deterministic: the generators that
+# validate the registers, the smoke suite, the API suite, a Chromium-only UI
+# subset, an accessibility scan and the Postman collection.
+#
+# Deliberately NOT here: the full cross-browser run, the database and
+# reconciliation suites, and performance. Those are in the nightly workflow.
+# A pull request check that takes twenty minutes gets ignored or bypassed.
+
+name: Pull request
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  NORTHLINE_ENV: ci
+  NORTHLINE_RELEASE: ${{ github.sha }}
+  HEADLESS: "true"
+  RETRIES: "1"
+  CI: "true"
+
+jobs:
+  validate-documentation:
+    name: Validate registers and regenerate documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      # These generators exit non-zero when a register has drifted: an unknown
+      # requirement, a test case with no requirement, a defect whose writeup is
+      # missing, or a requirement with no test case at all. Running them first
+      # means a documentation problem fails in thirty seconds rather than after
+      # the whole suite.
+      - name: Requirements register
+        run: python scripts/generate_requirements_doc.py
+
+      - name: Test case registers
+        run: python scripts/generate_test_cases_doc.py
+
+      - name: Defect register
+        run: python scripts/generate_defect_report.py
+
+      - name: Traceability matrix
+        run: python scripts/generate_rtm.py
+
+      - name: Fail if generated documentation is out of date
+        run: |
+          set -o pipefail
+          if ! git diff --exit-code --stat docs/ test-cases/; then
+            echo "::error::Generated documentation differs from the committed copy."
+            echo "Run 'make docs' locally and commit the result."
+            exit 1
+          fi
+
+  test:
+    name: Smoke, API, UI and accessibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Node dependencies
+        run: |
+          npm ci || npm install
+          npm install --global newman
+
+      - name: Install Playwright browsers
+        run: python -m playwright install --with-deps chromium
+
+      - name: Start the environment
+        run: docker compose up -d
+
+      # ParaBank ships with an empty database and redirects to its own
+      # initialisation page until seeded. This is scripted rather than manual
+      # for exactly this reason: nobody is here to click it.
+      - name: Provision the System Under Test
+        run: python scripts/initialize_sut.py
+
+      - name: Environment readiness
+        run: python scripts/healthcheck.py
+
+      - name: Smoke suite
+        run: python -m pytest -m smoke -v --junitxml=reports/junit-smoke.xml
+
+      - name: API suite
+        run: python -m pytest -m api -v --junitxml=reports/junit-api.xml
+
+      # Chromium only, and visual tests excluded. Visual baselines are stored
+      # per platform because font rendering differs between operating systems,
+      # and there are no Linux baselines in this repository. Comparing a Linux
+      # screenshot against a macOS baseline produces a failure that looks like a
+      # layout regression and is not.
+      - name: UI suite (Chromium, excluding visual regression)
+        run: |
+          python -m pytest -m "ui and not visual" -v \
+            --browser chromium \
+            --screenshot=only-on-failure \
+            --tracing=retain-on-failure \
+            --output=reports/artifacts \
+            --junitxml=reports/junit-ui.xml
+
+      - name: Accessibility suite
+        run: |
+          python -m pytest -m accessibility -v \
+            --browser chromium \
+            --junitxml=reports/junit-accessibility.xml
+
+      - name: Postman collection
+        run: |
+          newman run postman/northline.postman_collection.json \
+            -e postman/northline.local.postman_environment.json \
+            --reporters cli,junit \
+            --reporter-junit-export reports/newman-junit.xml
+
+      - name: Application logs on failure
+        if: failure()
+        run: docker compose logs parabank | tail -100
+
+      - name: Upload results and failure artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pull-request-results
+          path: |
+            reports/
+          retention-days: 14
+
+      - name: Stop the environment
+        if: always()
+        run: docker compose down -v

@@ -1,0 +1,145 @@
+# Full regression, run nightly.
+#
+# Buys thoroughness with time nobody is waiting on: every browser, the database
+# and reconciliation suites, the full accessibility scan, the security suite,
+# and every generated report.
+#
+# Performance is deliberately NOT here. See docs/ci-cd.md.
+
+name: Nightly regression
+
+on:
+  schedule:
+    # 07:00 UTC, which is 02:00 or 03:00 in Windsor depending on the season.
+    - cron: "0 7 * * *"
+  workflow_dispatch:
+
+env:
+  NORTHLINE_ENV: ci
+  NORTHLINE_RELEASE: nightly-${{ github.run_number }}
+  HEADLESS: "true"
+  RETRIES: "1"
+  CI: "true"
+
+jobs:
+  regression:
+    name: Full regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install Node dependencies
+        run: |
+          npm ci || npm install
+          npm install --global newman
+
+      - name: Install Playwright browsers
+        run: python -m playwright install --with-deps chromium firefox webkit
+
+      - name: Start the environment
+        run: docker compose up -d
+
+      - name: Provision the System Under Test
+        run: python scripts/initialize_sut.py
+
+      - name: Environment readiness
+        run: python scripts/healthcheck.py
+
+      - name: Validate every register
+        run: |
+          set -o pipefail
+          python scripts/generate_requirements_doc.py
+          python scripts/generate_test_cases_doc.py
+          python scripts/generate_defect_report.py
+          python scripts/generate_rtm.py
+
+      - name: Smoke suite
+        run: python -m pytest -m smoke -v --junitxml=reports/junit-smoke.xml
+
+      - name: API suite
+        run: python -m pytest -m api -v --junitxml=reports/junit-api.xml
+
+      # Every browser. Visual regression is still excluded: baselines are per
+      # platform and this repository holds macOS ones only. Creating Linux
+      # baselines on a runner would mean accepting whatever the first run
+      # produced as correct, with nobody looking at it, which defeats the
+      # purpose of a baseline.
+      - name: UI suite, all browsers, excluding visual regression
+        run: |
+          python -m pytest -m "ui and not visual" -v \
+            --browser chromium --browser firefox --browser webkit \
+            --screenshot=only-on-failure \
+            --tracing=retain-on-failure \
+            --output=reports/artifacts \
+            --junitxml=reports/junit-ui.xml
+
+      - name: Reset test data before the data suites
+        run: python scripts/reset_sut_data.py
+
+      - name: Extract into the certification data store
+        run: python scripts/extract.py
+
+      - name: Database and ledger suite
+        run: python -m pytest -m database -v --junitxml=reports/junit-database.xml
+
+      - name: Reconciliation suite
+        run: python -m pytest -m reconciliation -v --junitxml=reports/junit-reconciliation.xml
+
+      - name: Settlement reconciliation run
+        run: python scripts/reconcile.py
+
+      - name: Accessibility scan
+        run: python scripts/scan_accessibility.py
+
+      - name: Accessibility suite
+        run: |
+          python -m pytest -m accessibility -v \
+            --browser chromium \
+            --junitxml=reports/junit-accessibility.xml
+
+      - name: Security-adjacent suite
+        run: |
+          python -m pytest -m security -v \
+            --browser chromium \
+            --junitxml=reports/junit-security.xml
+
+      - name: Postman collection
+        run: |
+          newman run postman/northline.postman_collection.json \
+            -e postman/northline.local.postman_environment.json \
+            --reporters cli,junit \
+            --reporter-junit-export reports/newman-junit.xml
+
+      - name: Jira import files
+        run: python scripts/generate_jira_import.py
+
+      - name: Application logs on failure
+        if: failure()
+        run: docker compose logs parabank | tail -200
+
+      - name: Upload all reports and artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-regression-${{ github.run_number }}
+          path: |
+            reports/
+            docs/accessibility-report.md
+          retention-days: 30
+
+      - name: Stop the environment
+        if: always()
+        run: docker compose down -v

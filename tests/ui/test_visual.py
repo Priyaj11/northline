@@ -27,7 +27,14 @@ import pytest
 
 from utils.visual import assert_matches_baseline
 
-pytestmark = pytest.mark.ui
+pytestmark = [pytest.mark.ui, pytest.mark.visual]
+
+# The visual marker exists so continuous integration can run the browser suite
+# without these. Baselines are stored per platform AND per browser, because font
+# rendering differs between operating systems as well as between engines. This
+# repository holds macOS baselines only, so a Linux runner has nothing valid to
+# compare against and creating baselines automatically on a runner would mean
+# accepting whatever the first run produced, with nobody looking at it.
 
 #: A small allowance for font anti-aliasing between runs on the same machine.
 #: Zero would be ideal, but text edges move by a pixel or two and a suite that
