@@ -18,9 +18,15 @@ asked for.
 The defect column is populated from defects/register.yaml and reflects defects
 actually raised against the named test case.
 
-The result column still reads 'not executed'. Test outcomes are attached in
-Phase 7 from the JUnit XML a real run produces. A traceability matrix that
-shows results which never happened is worse than no matrix at all.
+The result column is populated from the JUnit XML files in reports/, but ONLY
+for test cases that name a specific automated test. Those read passed, failed,
+or expected failure.
+
+Every other row reads 'no explicit link'. Those cases are automated at suite
+level: the suite covering that area runs, but nothing in the data proves which
+function corresponds to which case identifier. Matching them by name would be
+guessing, and a matrix built on guesses is worse than one with an honest gap,
+because nobody can tell which rows are trustworthy.
 
 Coverage here means a requirement has at least one test case. It does not mean
 the requirement is fully verified.
@@ -77,120 +83,120 @@ defect raised against them.
 
 | Requirement | Priority | Source | Test case | Technique | Automation | Defect | Result |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-ENV-001 | Critical | observed | TC-ENV-001 The home page is reachable | Equivalence Partitioning | automated: `tests/smoke/test_environment.py::test_sut_home_page_is_served` | none | not executed |
-| REQ-ENV-002 | Critical | observed | TC-ENV-002 The home page does not redirect to the initialisation page | Negative Testing | automated: `tests/smoke/test_environment.py::test_sut_home_page_does_not_redirect_to_initialisation` | none | not executed |
-| REQ-ENV-003 | High | observed | TC-ENV-003 The served application is ParaBank | Equivalence Partitioning | automated: `tests/smoke/test_environment.py::test_sut_home_page_looks_like_parabank` | none | not executed |
-| REQ-ENV-004 | Critical | observed | TC-ENV-004 The application database schema exists | Equivalence Partitioning | automated: `tests/smoke/test_environment.py::test_sut_database_schema_exists` | none | not executed |
-| REQ-ENV-005 | Critical | observed | TC-ENV-005 The certification data store accepts connections | Equivalence Partitioning | automated: `tests/smoke/test_environment.py::test_certification_data_store_accepts_connections` | none | not executed |
+| REQ-ENV-001 | Critical | observed | TC-ENV-001 The home page is reachable | Equivalence Partitioning | automated: `tests/smoke/test_environment.py::test_sut_home_page_is_served` | none | passed |
+| REQ-ENV-002 | Critical | observed | TC-ENV-002 The home page does not redirect to the initialisation page | Negative Testing | automated: `tests/smoke/test_environment.py::test_sut_home_page_does_not_redirect_to_initialisation` | none | passed |
+| REQ-ENV-003 | High | observed | TC-ENV-003 The served application is ParaBank | Equivalence Partitioning | automated: `tests/smoke/test_environment.py::test_sut_home_page_looks_like_parabank` | none | passed |
+| REQ-ENV-004 | Critical | observed | TC-ENV-004 The application database schema exists | Equivalence Partitioning | automated: `tests/smoke/test_environment.py::test_sut_database_schema_exists` | none | passed |
+| REQ-ENV-005 | Critical | observed | TC-ENV-005 The certification data store accepts connections | Equivalence Partitioning | automated: `tests/smoke/test_environment.py::test_certification_data_store_accepts_connections` | none | passed |
 
 ### AUTH - Authentication and session
 
 | Requirement | Priority | Source | Test case | Technique | Automation | Defect | Result |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-AUTH-001 | Critical | observed | TC-AUTH-001 Log in with valid credentials | Equivalence Partitioning | planned | none | not executed |
-| REQ-AUTH-001 | Critical | observed | TC-AUTH-002 Log in through the service interface with valid credentials | Equivalence Partitioning | planned | none | not executed |
-| REQ-AUTH-002 | Critical | derived | TC-AUTH-003 Reject a valid username with a wrong password | Equivalence Partitioning | planned | none | not executed |
-| REQ-AUTH-002 | Critical | derived | TC-AUTH-004 Reject an unknown username | Equivalence Partitioning | planned | none | not executed |
-| REQ-AUTH-002 | Critical | derived | TC-AUTH-005 The error message does not reveal which credential was wrong | Negative Testing | planned | none | not executed |
-| REQ-AUTH-003 | High | derived | TC-AUTH-006 Reject an empty username | Boundary Value Analysis | planned | none | not executed |
-| REQ-AUTH-003 | High | derived | TC-AUTH-007 Reject an empty password | Boundary Value Analysis | planned | none | not executed |
-| REQ-AUTH-003 | High | derived | TC-AUTH-008 Reject both fields empty | Boundary Value Analysis | planned | none | not executed |
-| REQ-AUTH-004 | High | derived | TC-AUTH-009 Log out ends the session | State Transition Testing | planned | none | not executed |
-| REQ-AUTH-004 | High | derived | TC-AUTH-010 An account page is not reachable after logging out | State Transition Testing | planned | none | not executed |
-| REQ-AUTH-005 | High | assumed | TC-AUTH-011 Register a new customer | Equivalence Partitioning | planned | none | not executed |
-| REQ-AUTH-005 | High | assumed | TC-AUTH-012 Reject registration with a duplicate username | Negative Testing | planned | none | not executed |
+| REQ-AUTH-001 | Critical | observed | TC-AUTH-001 Log in with valid credentials | Equivalence Partitioning | planned | none | no explicit link |
+| REQ-AUTH-001 | Critical | observed | TC-AUTH-002 Log in through the service interface with valid credentials | Equivalence Partitioning | planned | none | no explicit link |
+| REQ-AUTH-002 | Critical | derived | TC-AUTH-003 Reject a valid username with a wrong password | Equivalence Partitioning | planned | none | no explicit link |
+| REQ-AUTH-002 | Critical | derived | TC-AUTH-004 Reject an unknown username | Equivalence Partitioning | planned | none | no explicit link |
+| REQ-AUTH-002 | Critical | derived | TC-AUTH-005 The error message does not reveal which credential was wrong | Negative Testing | planned | none | no explicit link |
+| REQ-AUTH-003 | High | derived | TC-AUTH-006 Reject an empty username | Boundary Value Analysis | planned | none | no explicit link |
+| REQ-AUTH-003 | High | derived | TC-AUTH-007 Reject an empty password | Boundary Value Analysis | planned | none | no explicit link |
+| REQ-AUTH-003 | High | derived | TC-AUTH-008 Reject both fields empty | Boundary Value Analysis | planned | none | no explicit link |
+| REQ-AUTH-004 | High | derived | TC-AUTH-009 Log out ends the session | State Transition Testing | planned | none | no explicit link |
+| REQ-AUTH-004 | High | derived | TC-AUTH-010 An account page is not reachable after logging out | State Transition Testing | planned | none | no explicit link |
+| REQ-AUTH-005 | High | assumed | TC-AUTH-011 Register a new customer | Equivalence Partitioning | planned | none | no explicit link |
+| REQ-AUTH-005 | High | assumed | TC-AUTH-012 Reject registration with a duplicate username | Negative Testing | planned | none | no explicit link |
 
 ### ACCT - Accounts
 
 | Requirement | Priority | Source | Test case | Technique | Automation | Defect | Result |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-ACCT-001 | Critical | observed | TC-ACCT-001 View the list of accounts in the browser | Equivalence Partitioning | planned | none | not executed |
-| REQ-ACCT-001 | Critical | observed | TC-ACCT-002 Retrieve the list of accounts through the service interface | Equivalence Partitioning | planned | none | not executed |
-| REQ-ACCT-002 | High | observed | TC-ACCT-003 View a single account's detail | Equivalence Partitioning | planned | none | not executed |
-| REQ-ACCT-002 | High | observed | TC-ACCT-004 Request an account identifier that does not exist | Negative Testing | planned | none | not executed |
-| REQ-ACCT-003 | Critical | derived | TC-ACCT-005 The balance in the browser matches the service and the data store | Equivalence Partitioning | planned | none | not executed |
-| REQ-ACCT-004 | Medium | assumed | TC-ACCT-006 Open a new account funded from an existing one | Equivalence Partitioning | planned | none | not executed |
+| REQ-ACCT-001 | Critical | observed | TC-ACCT-001 View the list of accounts in the browser | Equivalence Partitioning | planned | none | no explicit link |
+| REQ-ACCT-001 | Critical | observed | TC-ACCT-002 Retrieve the list of accounts through the service interface | Equivalence Partitioning | planned | none | no explicit link |
+| REQ-ACCT-002 | High | observed | TC-ACCT-003 View a single account's detail | Equivalence Partitioning | planned | none | no explicit link |
+| REQ-ACCT-002 | High | observed | TC-ACCT-004 Request an account identifier that does not exist | Negative Testing | planned | none | no explicit link |
+| REQ-ACCT-003 | Critical | derived | TC-ACCT-005 The balance in the browser matches the service and the data store | Equivalence Partitioning | planned | none | no explicit link |
+| REQ-ACCT-004 | Medium | assumed | TC-ACCT-006 Open a new account funded from an existing one | Equivalence Partitioning | planned | none | no explicit link |
 
 ### XFER - Funds transfer
 
 | Requirement | Priority | Source | Test case | Technique | Automation | Defect | Result |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-XFER-001 | Critical | observed | TC-XFER-001 Transfer a typical valid amount between two of the customer's accounts | Equivalence Partitioning | planned | none | not executed |
-| REQ-XFER-001 | Critical | observed | TC-XFER-002 Transfer through the service interface | Equivalence Partitioning | planned | none | not executed |
-| REQ-XFER-001 | Critical | observed | TC-XFER-016 Transfer across browsers and account types, reduced by pairwise selection | Pairwise Testing | planned | none | not executed |
-| REQ-XFER-002 | Critical | derived | TC-XFER-003 The source is debited and the destination credited by the same amount | Equivalence Partitioning | planned | none | not executed |
-| REQ-XFER-003 | High | assumed | TC-XFER-004 Reject a transfer of zero | Boundary Value Analysis | planned | **DEF-001** (Critical) | not executed |
-| REQ-XFER-003 | High | assumed | TC-XFER-005 Reject a transfer just below zero | Boundary Value Analysis | planned | **DEF-001** (Critical) | not executed |
-| REQ-XFER-003 | High | assumed | TC-XFER-006 Accept the smallest valid amount | Boundary Value Analysis | planned | none | not executed |
-| REQ-XFER-003 | High | assumed | TC-XFER-007 Reject a clearly negative amount | Equivalence Partitioning | planned | **DEF-001** (Critical) | not executed |
-| REQ-XFER-004 | High | assumed | TC-XFER-008 Reject a non-numeric amount | Negative Testing | planned | none | not executed |
-| REQ-XFER-004 | High | assumed | TC-XFER-009 Reject an empty amount | Boundary Value Analysis | planned | none | not executed |
-| REQ-XFER-004 | High | assumed | TC-XFER-010 Handle an amount with more than two decimal places | Boundary Value Analysis | planned | none | not executed |
-| REQ-XFER-004 | High | assumed | TC-XFER-011 Reject an amount containing a currency symbol or separators | Negative Testing | planned | none | not executed |
-| REQ-XFER-005 | High | assumed | TC-XFER-012 Reject a transfer to an account that does not exist | Negative Testing | planned | none | not executed |
-| REQ-XFER-005 | High | assumed | TC-XFER-013 Handle a transfer where source and destination are the same account | Decision Table Testing | planned | none | not executed |
-| REQ-XFER-006 | Critical | derived | TC-XFER-014 A completed transfer appears in both accounts' transaction history | Equivalence Partitioning | planned | none | not executed |
-| REQ-XFER-007 | High | assumed | TC-XFER-015 Establish how a transfer exceeding the available balance is handled | Boundary Value Analysis | planned | none | not executed |
+| REQ-XFER-001 | Critical | observed | TC-XFER-001 Transfer a typical valid amount between two of the customer's accounts | Equivalence Partitioning | planned | none | no explicit link |
+| REQ-XFER-001 | Critical | observed | TC-XFER-002 Transfer through the service interface | Equivalence Partitioning | planned | none | no explicit link |
+| REQ-XFER-001 | Critical | observed | TC-XFER-016 Transfer across browsers and account types, reduced by pairwise selection | Pairwise Testing | planned | none | no explicit link |
+| REQ-XFER-002 | Critical | derived | TC-XFER-003 The source is debited and the destination credited by the same amount | Equivalence Partitioning | planned | none | no explicit link |
+| REQ-XFER-003 | High | assumed | TC-XFER-004 Reject a transfer of zero | Boundary Value Analysis | planned | **DEF-001** (Critical) | no explicit link |
+| REQ-XFER-003 | High | assumed | TC-XFER-005 Reject a transfer just below zero | Boundary Value Analysis | planned | **DEF-001** (Critical) | no explicit link |
+| REQ-XFER-003 | High | assumed | TC-XFER-006 Accept the smallest valid amount | Boundary Value Analysis | planned | none | no explicit link |
+| REQ-XFER-003 | High | assumed | TC-XFER-007 Reject a clearly negative amount | Equivalence Partitioning | planned | **DEF-001** (Critical) | no explicit link |
+| REQ-XFER-004 | High | assumed | TC-XFER-008 Reject a non-numeric amount | Negative Testing | planned | none | no explicit link |
+| REQ-XFER-004 | High | assumed | TC-XFER-009 Reject an empty amount | Boundary Value Analysis | planned | none | no explicit link |
+| REQ-XFER-004 | High | assumed | TC-XFER-010 Handle an amount with more than two decimal places | Boundary Value Analysis | planned | none | no explicit link |
+| REQ-XFER-004 | High | assumed | TC-XFER-011 Reject an amount containing a currency symbol or separators | Negative Testing | planned | none | no explicit link |
+| REQ-XFER-005 | High | assumed | TC-XFER-012 Reject a transfer to an account that does not exist | Negative Testing | planned | none | no explicit link |
+| REQ-XFER-005 | High | assumed | TC-XFER-013 Handle a transfer where source and destination are the same account | Decision Table Testing | planned | none | no explicit link |
+| REQ-XFER-006 | Critical | derived | TC-XFER-014 A completed transfer appears in both accounts' transaction history | Equivalence Partitioning | planned | none | no explicit link |
+| REQ-XFER-007 | High | assumed | TC-XFER-015 Establish how a transfer exceeding the available balance is handled | Boundary Value Analysis | planned | none | no explicit link |
 
 ### BILL - Bill payment
 
 | Requirement | Priority | Source | Test case | Technique | Automation | Defect | Result |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-BILL-001 | High | observed | TC-BILL-001 Pay a bill with valid details | Equivalence Partitioning | planned | none | not executed |
-| REQ-BILL-001 | High | observed | TC-BILL-002 A bill payment debits the source account by the exact amount | Equivalence Partitioning | planned | none | not executed |
-| REQ-BILL-002 | Medium | assumed | TC-BILL-003 Reject a bill payment with missing payee details | Negative Testing | planned | none | not executed |
-| REQ-BILL-003 | High | derived | TC-BILL-004 A completed bill payment appears in the transaction history | Equivalence Partitioning | planned | none | not executed |
+| REQ-BILL-001 | High | observed | TC-BILL-001 Pay a bill with valid details | Equivalence Partitioning | planned | none | no explicit link |
+| REQ-BILL-001 | High | observed | TC-BILL-002 A bill payment debits the source account by the exact amount | Equivalence Partitioning | planned | none | no explicit link |
+| REQ-BILL-002 | Medium | assumed | TC-BILL-003 Reject a bill payment with missing payee details | Negative Testing | planned | none | no explicit link |
+| REQ-BILL-003 | High | derived | TC-BILL-004 A completed bill payment appears in the transaction history | Equivalence Partitioning | planned | none | no explicit link |
 
 ### TXN - Transaction history
 
 | Requirement | Priority | Source | Test case | Technique | Automation | Defect | Result |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-TXN-001 | High | observed | TC-TXN-001 View an account's transaction history | Equivalence Partitioning | planned | none | not executed |
-| REQ-TXN-002 | Medium | observed | TC-TXN-002 Filter transaction history by amount | Equivalence Partitioning | planned | none | not executed |
-| REQ-TXN-002 | Medium | observed | TC-TXN-003 Filter transaction history by date range | Boundary Value Analysis | planned | none | not executed |
-| REQ-TXN-003 | High | derived | TC-TXN-004 A transaction record carries account, amount, type and date | Equivalence Partitioning | planned | none | not executed |
+| REQ-TXN-001 | High | observed | TC-TXN-001 View an account's transaction history | Equivalence Partitioning | planned | none | no explicit link |
+| REQ-TXN-002 | Medium | observed | TC-TXN-002 Filter transaction history by amount | Equivalence Partitioning | planned | none | no explicit link |
+| REQ-TXN-002 | Medium | observed | TC-TXN-003 Filter transaction history by date range | Boundary Value Analysis | planned | none | no explicit link |
+| REQ-TXN-003 | High | derived | TC-TXN-004 A transaction record carries account, amount, type and date | Equivalence Partitioning | planned | none | no explicit link |
 
 ### DATA - Data integrity and reconciliation
 
 | Requirement | Priority | Source | Test case | Technique | Automation | Defect | Result |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-DATA-001 | Critical | derived | TC-DATA-001 Extract accounts and transactions into the certification data store | Equivalence Partitioning | planned | none | not executed |
-| REQ-DATA-002 | Critical | derived | TC-DATA-002 Generate a settlement file from transaction data | Equivalence Partitioning | planned | none | not executed |
-| REQ-DATA-003 | Critical | derived | TC-DATA-003 Reconciliation detects a missing record | Negative Testing | planned | none | not executed |
-| REQ-DATA-003 | Critical | derived | TC-DATA-004 Reconciliation detects a duplicate record | Negative Testing | planned | none | not executed |
-| REQ-DATA-003 | Critical | derived | TC-DATA-005 Reconciliation detects an amount mismatch | Negative Testing | planned | none | not executed |
-| REQ-DATA-003 | Critical | derived | TC-DATA-006 Reconciliation detects an account mismatch | Negative Testing | planned | none | not executed |
-| REQ-DATA-004 | High | derived | TC-DATA-007 Reconciliation reports totals and an overall status | Equivalence Partitioning | planned | none | not executed |
+| REQ-DATA-001 | Critical | derived | TC-DATA-001 Extract accounts and transactions into the certification data store | Equivalence Partitioning | planned | none | no explicit link |
+| REQ-DATA-002 | Critical | derived | TC-DATA-002 Generate a settlement file from transaction data | Equivalence Partitioning | planned | none | no explicit link |
+| REQ-DATA-003 | Critical | derived | TC-DATA-003 Reconciliation detects a missing record | Negative Testing | planned | none | no explicit link |
+| REQ-DATA-003 | Critical | derived | TC-DATA-004 Reconciliation detects a duplicate record | Negative Testing | planned | none | no explicit link |
+| REQ-DATA-003 | Critical | derived | TC-DATA-005 Reconciliation detects an amount mismatch | Negative Testing | planned | none | no explicit link |
+| REQ-DATA-003 | Critical | derived | TC-DATA-006 Reconciliation detects an account mismatch | Negative Testing | planned | none | no explicit link |
+| REQ-DATA-004 | High | derived | TC-DATA-007 Reconciliation reports totals and an overall status | Equivalence Partitioning | planned | none | no explicit link |
 
 ### SEC - Security-adjacent behaviour
 
 | Requirement | Priority | Source | Test case | Technique | Automation | Defect | Result |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-SEC-001 | Critical | derived | TC-SEC-001 Account data requires authentication | Negative Testing | planned | **DEF-005** (Critical) | not executed |
-| REQ-SEC-001 | Critical | derived | TC-SEC-002 Transaction data requires authentication | Negative Testing | planned | **DEF-005** (Critical) | not executed |
-| REQ-SEC-002 | Critical | derived | TC-SEC-003 A customer cannot read another customer's account | Negative Testing | planned | **DEF-005** (Critical) | not executed |
-| REQ-SEC-002 | Critical | derived | TC-SEC-004 A customer cannot transfer from another customer's account | Negative Testing | planned | none | not executed |
-| REQ-SEC-003 | High | derived | TC-SEC-005 Credentials are not transmitted in the URL path | Negative Testing | planned | **DEF-006** (High) | not executed |
-| REQ-SEC-004 | Critical | derived | TC-SEC-006 An authenticated page is not reachable without a session | State Transition Testing | planned | none | not executed |
-| REQ-SEC-004 | Critical | derived | TC-SEC-007 Behaviour of a session after the browser session ends | State Transition Testing | planned | none | not executed |
-| REQ-SEC-004 | Critical | derived | TC-SEC-008 Input validation on the transfer amount is enforced server side | Negative Testing | planned | **DEF-001** (Critical) | not executed |
+| REQ-SEC-001 | Critical | derived | TC-SEC-001 Account data requires authentication | Negative Testing | planned | **DEF-005** (Critical) | no explicit link |
+| REQ-SEC-001 | Critical | derived | TC-SEC-002 Transaction data requires authentication | Negative Testing | planned | **DEF-005** (Critical) | no explicit link |
+| REQ-SEC-002 | Critical | derived | TC-SEC-003 A customer cannot read another customer's account | Negative Testing | planned | **DEF-005** (Critical) | no explicit link |
+| REQ-SEC-002 | Critical | derived | TC-SEC-004 A customer cannot transfer from another customer's account | Negative Testing | planned | none | no explicit link |
+| REQ-SEC-003 | High | derived | TC-SEC-005 Credentials are not transmitted in the URL path | Negative Testing | planned | **DEF-006** (High) | no explicit link |
+| REQ-SEC-004 | Critical | derived | TC-SEC-006 An authenticated page is not reachable without a session | State Transition Testing | planned | none | no explicit link |
+| REQ-SEC-004 | Critical | derived | TC-SEC-007 Behaviour of a session after the browser session ends | State Transition Testing | planned | none | no explicit link |
+| REQ-SEC-004 | Critical | derived | TC-SEC-008 Input validation on the transfer amount is enforced server side | Negative Testing | planned | **DEF-001** (Critical) | no explicit link |
 
 ### ACC - Accessibility
 
 | Requirement | Priority | Source | Test case | Technique | Automation | Defect | Result |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-ACC-001 | High | derived | TC-ACC-001 Automated scan of the login page | Equivalence Partitioning | planned | **DEF-004** (Medium) | not executed |
-| REQ-ACC-001 | High | derived | TC-ACC-002 Automated scan of the account overview page | Equivalence Partitioning | planned | **DEF-004** (Medium) | not executed |
-| REQ-ACC-001 | High | derived | TC-ACC-003 Automated scan of the transfer page | Equivalence Partitioning | planned | **DEF-004** (Medium) | not executed |
-| REQ-ACC-002 | High | derived | TC-ACC-004 Every form input has an associated label | Equivalence Partitioning | planned | **DEF-003** (High) | not executed |
-| REQ-ACC-002 | High | derived | TC-ACC-007 Validation errors are announced, not only shown in colour | Negative Testing | planned | none | not executed |
-| REQ-ACC-003 | High | derived | TC-ACC-005 Complete a login using the keyboard alone | State Transition Testing | manual | none | not executed |
-| REQ-ACC-003 | High | derived | TC-ACC-006 Complete a transfer using the keyboard alone | State Transition Testing | manual | none | not executed |
+| REQ-ACC-001 | High | derived | TC-ACC-001 Automated scan of the login page | Equivalence Partitioning | planned | **DEF-004** (Medium) | no explicit link |
+| REQ-ACC-001 | High | derived | TC-ACC-002 Automated scan of the account overview page | Equivalence Partitioning | planned | **DEF-004** (Medium) | no explicit link |
+| REQ-ACC-001 | High | derived | TC-ACC-003 Automated scan of the transfer page | Equivalence Partitioning | planned | **DEF-004** (Medium) | no explicit link |
+| REQ-ACC-002 | High | derived | TC-ACC-004 Every form input has an associated label | Equivalence Partitioning | planned | **DEF-003** (High) | no explicit link |
+| REQ-ACC-002 | High | derived | TC-ACC-007 Validation errors are announced, not only shown in colour | Negative Testing | planned | none | no explicit link |
+| REQ-ACC-003 | High | derived | TC-ACC-005 Complete a login using the keyboard alone | State Transition Testing | manual | none | no explicit link |
+| REQ-ACC-003 | High | derived | TC-ACC-006 Complete a transfer using the keyboard alone | State Transition Testing | manual | none | no explicit link |
 
 ### PERF - Performance
 
 | Requirement | Priority | Source | Test case | Technique | Automation | Defect | Result |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| REQ-PERF-001 | Medium | derived | TC-PERF-001 Login response time under load | Boundary Value Analysis | planned | none | not executed |
-| REQ-PERF-002 | Medium | derived | TC-PERF-002 Account retrieval response time under load | Boundary Value Analysis | planned | none | not executed |
-| REQ-PERF-003 | Medium | derived | TC-PERF-003 Error rate under load | Boundary Value Analysis | planned | none | not executed |
+| REQ-PERF-001 | Medium | derived | TC-PERF-001 Login response time under load | Boundary Value Analysis | planned | none | no explicit link |
+| REQ-PERF-002 | Medium | derived | TC-PERF-002 Account retrieval response time under load | Boundary Value Analysis | planned | none | no explicit link |
+| REQ-PERF-003 | Medium | derived | TC-PERF-003 Error rate under load | Boundary Value Analysis | planned | none | no explicit link |

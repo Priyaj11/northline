@@ -61,3 +61,28 @@ obligations and risk appetite, decided by people other than the QA engineer.
 The numbers here are a single engineer's judgement for a demonstration
 application on one laptop. They are configuration rather than code precisely so
 that changing them is a visible decision.
+
+## Two kinds of generated document, two different rules
+
+The determinism rule above applies to generated VIEWS, not to generated RECORDS.
+
+    docs/requirements.md            a view of requirements.yaml
+    docs/defect-report.md           a view of defects/register.yaml
+    docs/requirements-traceability-matrix.md
+    test-cases/*.md
+
+Those are regenerated from registers, so the same inputs must produce the same
+bytes, and the drift check compares them against the committed copy. A timestamp
+in one makes that check impossible to satisfy.
+
+    docs/release-certification.md   a decision made at a moment
+    docs/accessibility-report.md    a scan of a running application
+
+Those are records. They describe what was true when they were produced, they
+carry a date on purpose, and regenerating one legitimately produces a different
+document. They are committed as point-in-time artefacts and are NOT part of the
+drift check.
+
+The distinction is worth stating because the two look alike in a directory
+listing. A certificate without a date is not a certificate, and a view that
+changes every time it is regenerated cannot be checked for drift.

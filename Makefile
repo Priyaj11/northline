@@ -1,6 +1,6 @@
 PY := .venv/bin/python
 
-.PHONY: help up down logs init health smoke docs env clean reset newman ui ui-all-browsers evidence certify
+.PHONY: help up down logs init health smoke docs env clean reset newman ui ui-all-browsers evidence certify summary
 
 help:
 	@echo "up      - start ParaBank and the PostgreSQL certification data store"
@@ -40,6 +40,7 @@ docs:
 	$(PY) scripts/generate_test_cases_doc.py
 	$(PY) scripts/generate_defect_report.py
 	$(PY) scripts/generate_rtm.py
+	$(PY) scripts/generate_summary_report.py
 
 env: up init health
 
@@ -127,3 +128,6 @@ evidence:
 
 certify:
 	$(PY) scripts/certify.py
+
+summary:
+	$(PY) scripts/generate_summary_report.py

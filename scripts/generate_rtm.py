@@ -47,6 +47,47 @@ def load_defects() -> list[dict]:
     return yaml.safe_load(DEFECT_REGISTER.read_text()).get("defects", [])
 
 
+def load_results() -> dict[str, str]:
+    """Map an automated test's node identifier to its outcome, from JUnit XML.
+
+    Only test cases that name a specific automated_test can be given a result.
+    Everything else is automated at suite level: the suite covering that area
+    runs, but nothing in the data proves which function corresponds to which
+    case identifier.
+
+    Matching the rest by name would be guessing, and a traceability matrix built
+    on guesses is worse than one with an honest gap, because nobody can tell
+    which rows are trustworthy.
+    """
+    import xml.etree.ElementTree as ET
+
+    results: dict[str, str] = {}
+    reports = REPO_ROOT / "reports"
+    if not reports.exists():
+        return results
+
+    for path in sorted(reports.glob("junit-*.xml")):
+        try:
+            root = ET.parse(path).getroot()
+        except ET.ParseError:
+            continue
+        suites = [root] if root.tag == "testsuite" else root.findall("testsuite")
+        for suite in suites:
+            for case in suite.findall("testcase"):
+                node = f"{case.get('file', '')}::{case.get('name', '')}"
+                if case.find("failure") is not None or case.find("error") is not None:
+                    outcome = "FAILED"
+                elif case.find("skipped") is not None:
+                    outcome = "expected failure or skipped"
+                else:
+                    outcome = "passed"
+                results[node] = outcome
+                # Also key on the bare function name, since a case may record its
+                # automated_test with or without a parametrised suffix.
+                results.setdefault(case.get("name", ""), outcome)
+    return results
+
+
 def load_cases() -> list[dict]:
     cases: list[dict] = []
     for path in sorted(CASE_DIR.glob("*.yaml")):
@@ -75,6 +116,7 @@ def main() -> int:
     # violates and the test cases that found it, so the matrix can show, for any
     # row, whether that specific test case raised something.
     defects = load_defects()
+    results = load_results()
     defects_by_case: dict[str, list[dict]] = defaultdict(list)
     defects_by_requirement: dict[str, list[dict]] = defaultdict(list)
     for defect in defects:
@@ -114,9 +156,15 @@ def main() -> int:
         "The defect column is populated from defects/register.yaml and reflects defects",
         "actually raised against the named test case.",
         "",
-        "The result column still reads 'not executed'. Test outcomes are attached in",
-        "Phase 7 from the JUnit XML a real run produces. A traceability matrix that",
-        "shows results which never happened is worse than no matrix at all.",
+        "The result column is populated from the JUnit XML files in reports/, but ONLY",
+        "for test cases that name a specific automated test. Those read passed, failed,",
+        "or expected failure.",
+        "",
+        "Every other row reads 'no explicit link'. Those cases are automated at suite",
+        "level: the suite covering that area runs, but nothing in the data proves which",
+        "function corresponds to which case identifier. Matching them by name would be",
+        "guessing, and a matrix built on guesses is worse than one with an honest gap,",
+        "because nobody can tell which rows are trustworthy.",
         "",
         "Coverage here means a requirement has at least one test case. It does not mean",
         "the requirement is fully verified.",
@@ -196,10 +244,18 @@ def main() -> int:
                 defect_cell = ", ".join(
                     f"**{d['id']}** ({d['severity']})" for d in raised
                 ) or NO_DEFECT
+
+                node = case.get("automated_test")
+                if node:
+                    result_cell = results.get(node) or results.get(
+                        node.split("::")[-1], "no result recorded")
+                else:
+                    result_cell = "no explicit link"
+
                 lines.append(
                     f"| {req['id']} | {req['priority']} | {req['source']} | "
                     f"{case['id']} {case['title']} | {case['technique']} | "
-                    f"{automation} | {defect_cell} | {NOT_EXECUTED} |"
+                    f"{automation} | {defect_cell} | {result_cell} |"
                 )
         lines.append("")
 
