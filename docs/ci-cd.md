@@ -175,11 +175,32 @@ minutes 12 seconds and none of the three predicted problems occurred:
     Runner memory            the application, PostgreSQL, Chromium and the test
                              process coexisted without trouble
 
-WebKit is NOT covered by that result. The pull request pipeline installs
-Chromium only; Firefox and WebKit are installed by the nightly pipeline, which
-had not run at the time of writing. Whether --with-deps supplies everything
-those two engines need on a runner is still an open question, not a verified
-one.
+## The nightly pipeline, first run
+
+Triggered by hand on 2026-08-31. Every step passed in 3 minutes 37 seconds,
+including all four things that were genuinely uncertain beforehand:
+
+    Firefox and WebKit       both installed with --with-deps, no extra system
+                             packages needed
+    Database suite           PostgreSQL from the compose stack worked on the
+                             runner, and the ledger assertions passed
+    Security suite           registering a second customer through the browser,
+                             the most involved setup in the project, worked
+                             unchanged on Linux
+    Accessibility suite      the rule baseline recorded from a macOS scan also
+                             held on Linux, so no platform-specific rules
+                             appeared
+
+That last one was the least predictable. Colour contrast and font rendering
+differ between operating systems, so a rule failing on one platform and not the
+other was a real possibility. It did not happen, and knowing that is worth more
+than assuming it either way.
+
+## Remaining warning
+
+actions/upload-artifact@v5 still targets Node.js 20 and is forced onto Node 24
+by the runner. That is GitHub's to fix in a future release of the action, not
+something this repository can address, and it does not affect the result.
 
 That is worth recording rather than quietly deleting. The risks were reasonable
 to anticipate and it would have been irresponsible not to plan for them, but
