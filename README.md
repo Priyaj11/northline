@@ -235,7 +235,3 @@ green while proving nothing.
 | [Performance notes](docs/performance-notes.md) | Results, and the invalid first run |
 | [CI and CD](docs/ci-cd.md) | Both pipelines and what is excluded |
 | [System under test](docs/sut-parabank.md) | ParaBank's quirks, discovered rather than assumed |
-
-## Built by
-
-Priya Jaffarali — [github.com/Priyaj11](https://github.com/Priyaj11)
